@@ -4,6 +4,8 @@
 // @version      1.0
 // @description  Booking Loginをタッチレスに
 // @author       草村安隆 Andrew Lucian Thoreson
+// @downloadURL  https://github.com/Altigraph/QMTM/raw/master/Booking%E3%83%AD%E3%82%B0%E3%82%A4%E3%83%B3.user.js
+// @updateURL    https://github.com/Altigraph/QMTM/raw/master/Booking%E3%83%AD%E3%82%B0%E3%82%A4%E3%83%B3.user.js
 // @include      https://account.booking.com/sign-in*
 // @run-at       document-idle
 // ==/UserScript==

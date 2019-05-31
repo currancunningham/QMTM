@@ -4,6 +4,8 @@
 // @version      1.1
 // @description  Clickup画面より↔トラブル管理シートの取扱
 // @author       草村安隆 Andrew Lucian Thoreson
+// @downloadURL  https://github.com/Altigraph/QMTM/raw/master/ClickUp%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E8%A8%98%E9%8C%B2%E5%B8%B3.user.js
+// @updateURL    https://github.com/Altigraph/QMTM/raw/master/ClickUp%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E8%A8%98%E9%8C%B2%E5%B8%B3.user.js
 // @include      https://app.clickup.com*
 // @resource     settings file:///C:/Program Files/QMTM/settings.json
 // @connect      google.com

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Airbnbゲストインフォ
 // @namespace    https://www.faminect.jp/
-// @version      1.0
+// @version      1.0.1
 // @description  Airbnbからゲストインフォ快速取得
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/Airbnb%E3%82%B2%E3%82%B9%E3%83%88%E3%82%A4%E3%83%B3%E3%83%95%E3%82%A9.user.js

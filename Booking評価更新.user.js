@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Booking評価更新
 // @namespace    https://www.faminect.jp/
-// @version      1.1
+// @version      1.2.1
 // @description  Bookingのページを開けたら、背景でレビュー取得
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/Booking%E8%A9%95%E4%BE%A1%E6%9B%B4%E6%96%B0.user.js

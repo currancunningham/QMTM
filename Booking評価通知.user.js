@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Booking評価通知
 // @namespace    https://www.faminect.jp/
-// @version      1.2
+// @version      1.2.1
 // @description  Bookingレビューページから、新レビュー通知発行・各ホテル詳細レビュー記録取得
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/Booking%E8%A9%95%E4%BE%A1%E9%80%9A%E7%9F%A5.user.js
@@ -88,19 +88,23 @@ function nothingNewFound() {
       url: JSON.parse(GM_getResourceText('settings')).api.notification,
       method: "GET",
       onload: (res) => {
-        needUpdate(res);
+        var json = JSON.parse(res.responseText);
+        console.log(json)
+        setTimeout(openReviews(json.hotel_id), 2500);
+        needUpdate(json);
         goodbye();
       }
     });
 }
 
 function goodbye() {
+    var d = new Date();
+    localStorage.setItem("booking_last_seen_time", d.getTime());
     if (window.opener && window.opener.tampermonkey === true) { window.close(); }
     document.title = originalTitle;
 }
 
-function needUpdate(res) {
-    var json = JSON.parse(res.responseText);
+function needUpdate(json) {
     GM_setValue("reviews", JSON.stringify(json.knownReviews)); //updating cache
     var d = new Date();
     var ud = new Date(parseInt(json.nextUpdate));
@@ -150,9 +154,9 @@ function readReviews() {
     var fixMonth = reviews[i].innerText.replace(/(\d*)月/, function(p1) {
       const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
       return monthNames[(parseInt(p1) - 1)];
-    });
-    out.push(fixMonth.replace(regex,
-             "https://admin.booking.com/hotel/hoteladmin/extranet_ng/manage/reviews.html?hotel_id=$2\n$1"));
+    }).replace(regex,
+             "https://admin.booking.com/hotel/hoteladmin/extranet_ng/manage/reviews.html?hotel_id=$2\n$1");
+    out.push(fixMonth);
  }
  return out;
 }
@@ -166,6 +170,24 @@ function readReviewsToClipboard() {
   }
 }
 
+function getOutdated() {
+  console.log("Trying outdated hotel ids...")
+  GM_xmlhttpRequest({
+    url: JSON.parse(GM_getResourceText('settings')).api.notification,
+    method: "GET",
+    onload: (res) => {
+      var json = JSON.parse(res.responseText);
+      if (json.hotel_id) {
+        setTimeout(getOutdated(), 10000);
+        if (json.hotel_id !== localStorage.getItem("lastHotelId"))  {
+          localStorage.setItem("lastHotelId", json.hotel_id);
+          setTimeout(openReviews(json.hotel_id), 2500);
+        }
+      }
+    }
+  });
+}
+
 function exportReviews() {
   readReviewsToClipboard();
   replaceLinks();
@@ -174,11 +196,13 @@ function exportReviews() {
 if (!GM_getResourceText('settings')) { window.alert("settings.jsonをC:/Program Files/QMTM/に入れてください！"); }
 var myDiv       = document.createElement ('div');
 myDiv.innerHTML = '<button id="exportReviews" type="button">予約エクスポート</button><br>\
-                  <button id="openLinks" type="button">全ての物件を開ける</button><p>【ホテル除き】</p>';
+                  <button id="getOutdated" type="button">自動レビュー取得</button><br>\
+                  <button id="openLinks" type="button">表示物件、全て開ける</button><p>【ホテル除き】</p>';
 
 document.querySelector('.bui-page-header').appendChild(myDiv);
 document.getElementById("openLinks").addEventListener("click", openLinks, false);
 document.getElementById("exportReviews").addEventListener("click", exportReviews, false);
+document.getElementById("getOutdated").addEventListener("click", getOutdated, false);
 setInterval(replaceLinks, 2000);
 
 var originalTitle = document.title;

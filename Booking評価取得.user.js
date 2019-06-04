@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Booking評価取得
 // @namespace    https://www.faminect.jp/
-// @version      1.2
+// @version      1.2.1
 // @description  Bookingレビューページから取得し、シートまで送る
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/Booking%E8%A9%95%E4%BE%A1%E5%8F%96%E5%BE%97.user.js
@@ -62,7 +62,7 @@ function sendToBackend(r) {
       onload: (res) => {
         console.log(res.responseText);
         let json = JSON.parse(res.responseText);
-        setTimeout(openReviews(json.hotel_id), 3000);
+        setTimeout(openReviews(json.hotel_id), 5000);
       }
     });
   });
@@ -136,6 +136,6 @@ function keepButton() {
     const url = new URL(document.URL);
     let newReviews = createEntries();
     newReviews.length ? sendToBackend(newReviews) : console.log("No new reviews found.")
-    if (window.opener && window.opener.tampermonkey === true) { window.close(); }
     setInterval(keepButton, 2000)
+    if (window.opener && window.opener.tampermonkey === true) { setTimeout(window.close(), 7500); }
 })();

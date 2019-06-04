@@ -42,6 +42,7 @@ function requestEntry(entry) {
             w.document.write(res.responseText);
             break;
           default:
+           document.querySelector("#displayStatus").innerText = "Error!";
            console.log("Error: "+json.error);
         }
       }
@@ -62,6 +63,11 @@ function displayEntry(entry) {
       }
   myDiv.innerHTML = getHTML(entry, clickup);
   document.querySelector(".task-column_main").appendChild(myDiv);
+  document.querySelector('#addInfo').setAttribute('style', ''); //making visible
+  var statusButton = document.getElementById("displayStatus");
+  statusButton.addEventListener("click", hideTroubles, false);
+  statusButton.innerText = "　シート情報を隠す　";
+  statusButton.removeAttribute('disabled');
   document.getElementById("update").addEventListener("click", update, false);
 }
 
@@ -85,16 +91,15 @@ function createEntry(data) {
 
 function addButtons() {
   var myDiv = document.createElement('div');
-  myDiv.innerHTML = `<div class="cu-task-info cu-task-info_row ng-tns-c3-0 cu-hidden-print ng-star-inserted" style="">
-                       <button id="addInfo">　物件情報追加　</button> <button id="hideTroubles">　シート情報を隠す　</button>
+  myDiv.innerHTML = `<div class="cu-task-info cu-task-info_row ng-tns-c3-0 cu-hidden-print ng-star-inserted" id="myButtonDiv">
+                       <button id="addInfo" style="display:none">　物件情報追加　</button> <button id="displayStatus" disabled>　Loading...　</button>
                      </div>`;
   document.querySelector('.task__toolbar').appendChild(myDiv);
-  document.getElementById("hideTroubles").addEventListener("click", hideTroubles, false);
   document.getElementById("addInfo").addEventListener('click', addInfoToBody);
 }
 
 function hideTroubles() {
-  var button = document.querySelector('#hideTroubles');
+  var button = document.querySelector('#displayStatus');
   var myDiv = document.querySelector('#myDiv');
   if (button && myDiv) {
       if (!myDiv.style.display) {
@@ -155,6 +160,7 @@ function update() {
           w.document.write(res.responseText);
           break;
         default:
+          document.querySelector("#displayStatus").innerText = "Error!";
           console.log("Error: "+json.error);
         }
       }
@@ -167,7 +173,7 @@ function getLS(entrylsno) {
   var regex = /[^\d](\d{8})[^\d]|[^\d](\d{7})[^\d]|^(\d{8})[^\d]|^(\d{7})[^\d]/;
   if (!entrylsno.match(regex)) {
     var lsno = document.querySelector(".task-name").innerText.match(regex);
-    lsno ? outlsno = lsno[1] || lsno[2] || lsno[3] || lsno[4] : entry.lsno = "";
+    lsno ? outlsno = lsno[1] || lsno[2] || lsno[3] || lsno[4] : outlsno = "";
   } else {
     outlsno = entrylsno.replace(/\s/, "");
   }
@@ -244,8 +250,8 @@ function getHTML(entry, clickup) {
 function checkEntry() {
     var a = location.href.match(/(.*)\/([a-z0-9]{5})$/);
     if (a) {
-        addButtons();
-        requestEntry(a[2]);
+      addButtons();
+      requestEntry(a[2]);
     }
 }
 

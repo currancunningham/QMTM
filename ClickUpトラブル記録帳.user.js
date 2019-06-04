@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ClickUpトラブル記録帳
 // @namespace    https://www.faminect.jp/
-// @version      1.2.2
+// @version      1.2.3
 // @description  Clickup画面より↔トラブル管理シートの取扱
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/ClickUp%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E8%A8%98%E9%8C%B2%E5%B8%B3.user.js
@@ -90,12 +90,29 @@ function createEntry(data) {
 }
 
 function addButtons() {
+  while (true) {
+    var e = document.getElementById("myButtonDiv");
+    if (e) { e.remove(); } else { break; }
+  }
   var myDiv = document.createElement('div');
   myDiv.innerHTML = `<div class="cu-task-info cu-task-info_row ng-tns-c3-0 cu-hidden-print ng-star-inserted" id="myButtonDiv">
                        <button id="addInfo" style="display:none">　物件情報追加　</button> <button id="displayStatus" disabled>　Loading...　</button>
                      </div>`;
   document.querySelector('.task__toolbar').appendChild(myDiv);
   document.getElementById("addInfo").addEventListener('click', addInfoToBody);
+  setTimeout(tryAgain, 5000);
+}
+
+function tryAgain(){
+  var button = document.getElementById("displayStatus");
+  if (button.innerText !== "　Loading...　") {
+    console.log("Button loaded");
+    return;
+   }
+  console.log("Request to server timed out? Try again?");
+  button.removeAttribute('disabled');
+  button.innerText = "　Try Again?　";
+  button.addEventListener('click', checkEntry);
 }
 
 function hideTroubles() {

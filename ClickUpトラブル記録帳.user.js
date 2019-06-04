@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ClickUpトラブル記録帳
 // @namespace    https://www.faminect.jp/
-// @version      1.2
+// @version      1.2.1
 // @description  Clickup画面より↔トラブル管理シートの取扱
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/ClickUp%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E8%A8%98%E9%8C%B2%E5%B8%B3.user.js
@@ -16,11 +16,13 @@
 // ==/UserScript==
 
 function requestEntry(entry) {
+  var lsno = document.getElementById("sheetlsno") ? document.getElementById("sheetlsno").value : "";
   GM_xmlhttpRequest({
       url: JSON.parse(GM_getResourceText('settings')).api.trouble,
       method: "POST",
       data: JSON.stringify({
           entry: entry,
+          lsno: getLS(lsno),
           action: 'get'
       }),
       onload: (res) => {
@@ -31,11 +33,9 @@ function requestEntry(entry) {
         switch (json.result) {
           case "success":
             displayEntry(json.data);
-            document.getElementById("addInfo").removeAttribute('disabled');
-            document.getElementById("addInfo").addEventListener('click', addInfoToBody);
             break;
           case "notFound":
-            displayEntry(createEntry());
+            displayEntry(createEntry(json.data));
             break;
           case "html":
             var w = window.open("about:blank", "_blank", "");
@@ -65,9 +65,11 @@ function displayEntry(entry) {
   document.getElementById("update").addEventListener("click", update, false);
 }
 
-function createEntry() {
-  document.getElementById("addInfo").setAttribute('disabled', true);
+function createEntry(data) {
   return {
+    cleaning_number: data.cleaning_number,
+    host_info: data.host_info,
+    airbnb_mail: data.airbnb_mail,
     date: getCreationDate(),
     error: '',
     category: '',
@@ -88,6 +90,7 @@ function addButtons() {
                      </div>`;
   document.querySelector('.task__toolbar').appendChild(myDiv);
   document.getElementById("hideTroubles").addEventListener("click", hideTroubles, false);
+  document.getElementById("addInfo").addEventListener('click', addInfoToBody);
 }
 
 function hideTroubles() {
@@ -145,8 +148,6 @@ function update() {
       console.log("Status: " +json.result);
       switch (json.result) {
         case "success":
-          document.getElementById("addInfo").removeAttribute('disabled');
-          document.getElementById("addInfo").addEventListener('click', addInfoToBody);
           displayEntry(json.data);
           break;
         case "html":
@@ -160,11 +161,21 @@ function update() {
   });
 }
 
+function getLS(entrylsno) {
+  var outlsno;
+  entrylsno += " "
+  var regex = /[^\d](\d{8})[^\d]|[^\d](\d{7})[^\d]|^(\d{8})[^\d]|^(\d{7})[^\d]/;
+  if (!entrylsno.match(regex)) {
+    var lsno = document.querySelector(".task-name").innerText.match(regex);
+    lsno ? outlsno = lsno[1] || lsno[2] || lsno[3] || lsno[4] : entry.lsno = "";
+  } else {
+    outlsno = entrylsno.replace(/\s/, "");
+  }
+  return outlsno;
+}
+
 function getHTML(entry, clickup) {
- if (entry.lsno === "") {
-   var lsno = document.querySelector(".task-name").innerText.match(/[^\d](\d{8})[^\d]|[^\d](\d{7})[^\d]|^(\d{8})[^\d]|^(\d{7})[^\d]/);
-   lsno ? entry.lsno = lsno[1] || lsno[2] || lsno[3] || lsno[4] : entry.lsno = "";
- }
+  entry.lsno = getLS(entry.lsno);
 
   return `
 <div class="task-todo" id="myDiv">

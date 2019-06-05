@@ -29,16 +29,9 @@ function getMatches(string, regex, index) {
 }
 
 function checkKnownReviews(r) {
-  const knownReviews = JSON.parse(GM_getValue("reviews", "[]"));
-  let newRev = [];
-  for (var i in knownReviews) {
-    for (var j in r){
-      if (knownReviews[i].join("") === r[j].join("")) {
-          r.splice(j, 1);
-      }
-    }
-  }
-  GM_setValue("reviews", JSON.stringify(knownReviews.concat(r))); //returning to cache
+  const kr = JSON.parse(GM_getValue("reviews", "[]"));
+  const newRev = r.filter(t_r => { return (kr.indexOf(t_r) + 1) === 0; });
+  GM_setValue("reviews", JSON.stringify(kr.concat(newRev))); //returning to cache
   return newRev;
 }
 
@@ -76,32 +69,32 @@ function openReviews(hotel_id) {
 function createEntries() {
   const hotel_id = document.querySelector('.prop-info__id').innerText;
   const hotel_name = document.querySelector('.prop-info__name').innerText;
-  //　ボタンで開かないはずのHOTEL IDをこちらに入れてー
   const json = JSON.parse(GM_getResourceText('settings'));
   if (json.ignoredProperties.indexOf(hotel_id) + 1) {
     return [];
   }
 
-  let reviews = document.getElementsByClassName('review-block review-w-score-breakdown');
+  const reviews = document.querySelectorAll('.review-w-score-breakdown');
   let i;
 
   let output = [];
-  for (i = 0; i < reviews.length; i++) {
+  reviews.forEach(this_review => {
     let today_ymd       = new Date().toJSON().slice(0,10).replace(/-/g,'/');
-    let this_review     = reviews[i];
     let reservationCode = this_review.innerHTML.match(/<a name="(.*?)"><\/a>/)[1];
-    let totalScore      = this_review.getElementsByClassName('bui-review-score__badge')[0].innerText;
-    let guestName       = this_review.getElementsByClassName('review-guest-name')[0].innerText;
-    let publicReview    = this_review.getElementsByClassName('review-block-content')[0];
-    if (!!publicReview)
-      publicReview    = this_review.getElementsByClassName('review-block-content')[0].innerText;
-    let categories      = this_review.getElementsByClassName('bui-score-bar__header');
+    let totalScore      = this_review.querySelector('.bui-review-score__badge').innerText;
+    let guestName       = this_review.querySelector('.review-guest-name').innerText;
+    let publicReview    = this_review.querySelector('.review-block-content').innerText || "";
+    let categories      = this_review.querySelectorAll('.bui-score-bar__header');
     let locationScore, correctness, checkin, cleanliness, communication, costperformance;
 
-    let k;
-    for (k = 0; k < categories.length; k++){
-	  let this_text  = categories[k].getElementsByClassName("bui-score-bar__title")[0].innerText;
-	  let this_score = categories[k].getElementsByClassName("bui-score-bar__score")[0].innerText;
+    categories.forEach(category => {
+      let score = category.querySelector(".bui-score-bar__score").innerText;
+      switch (category.querySelector(".bui-score-bar__title").innerText) {
+
+      }
+    });
+	  let this_text  = categories[k]
+	  let this_score = categories[k]
       if (this_text == "ロケーション" || this_text == "Location") { locationScore = this_score; }
       else if (this_text == "施設・設備" || this_text == "Facilities") { correctness = this_score; }
       else if (this_text == "快適さ" || this_text == "Comfort") { checkin = this_score; }
@@ -118,7 +111,7 @@ function createEntries() {
                        checkin, correctness, costperformance, today_ymd];
 
     output.push( this_output );
-  }
+  });
   return output;
 }
 

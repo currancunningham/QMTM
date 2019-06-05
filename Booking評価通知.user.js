@@ -171,7 +171,7 @@ function readReviewsToClipboard() {
 }
 
 function getOutdated() {
-  console.log("Trying outdated hotel ids...")
+  console.log("Waiting for Hotel ID...")
   GM_xmlhttpRequest({
     url: JSON.parse(GM_getResourceText('settings')).api.notification,
     method: "GET",
@@ -183,6 +183,8 @@ function getOutdated() {
           localStorage.setItem("lastHotelId", json.hotel_id);
           setTimeout(openReviews(json.hotel_id), 2500);
         }
+      } else {
+        window.alert("All properties up to date");
       }
     }
   });

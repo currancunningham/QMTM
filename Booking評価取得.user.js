@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Booking評価取得
 // @namespace    https://www.faminect.jp/
-// @version      1.2.1
+// @version      1.2.2
 // @description  Bookingレビューページから取得し、シートまで送る
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/Booking%E8%A9%95%E4%BE%A1%E5%8F%96%E5%BE%97.user.js
@@ -88,20 +88,34 @@ function createEntries() {
     let locationScore, correctness, checkin, cleanliness, communication, costperformance;
 
     categories.forEach(category => {
-      let score = category.querySelector(".bui-score-bar__score").innerText;
+      let this_score = category.querySelector(".bui-score-bar__score").innerText;
       switch (category.querySelector(".bui-score-bar__title").innerText) {
-
+        case "ロケーション":
+        case "Location":
+          locationScore = this_score;
+          break;
+        case "施設・設備":
+        case "Facilities":
+          correctness = this_score;
+          break;
+        case "快適さ":
+        case "Comfort":
+          checkin = this_score;
+          break;
+        case "清潔さ":
+        case "Cleanliness":
+          cleanliness = this_score;
+          break;
+        case "スタッフ":
+        case "Staff":
+          communication = this_score;
+          break;
+        case "コストパフォーマンス":
+        case "Value for money":
+          costperformance = this_score;
+          break;
       }
     });
-	  let this_text  = categories[k]
-	  let this_score = categories[k]
-      if (this_text == "ロケーション" || this_text == "Location") { locationScore = this_score; }
-      else if (this_text == "施設・設備" || this_text == "Facilities") { correctness = this_score; }
-      else if (this_text == "快適さ" || this_text == "Comfort") { checkin = this_score; }
-      else if (this_text == "清潔さ" || this_text == "Cleanliness") { cleanliness = this_score; }
-      else if (this_text == "スタッフ" || this_text == "Staff") { communication = this_score; }
-      else if (this_text == "コストパフォーマンス" || this_text == "Value for money" ) { costperformance = this_score; }
-    }
 
     let this_output = [json.sheets.booking.account[0] + hotel_id + json.sheets.booking.account[1] + hotel_name + json.sheets.booking.account[2],
                        json.sheets.booking.listingNumber, json.sheets.booking.propName,
@@ -117,7 +131,7 @@ function createEntries() {
 
 function keepButton() {
     if (document.getElementById("manualButton")) { return; }
-    var myDiv       = document.createElement ('div');
+    let myDiv       = document.createElement ('div');
     myDiv.innerHTML = '<button id="manualButton" type="button">レビューシートへ送信</button><button id="copyButton">レビューをコピー</button>';
     document.querySelector('.btn-group').appendChild(myDiv);
     document.getElementById("manualButton").addEventListener("click", manualButton, false);
@@ -127,7 +141,7 @@ function keepButton() {
 (function(){
     if (!GM_getResourceText('settings')) { window.alert("settings.jsonをC:/Program Files/QMTM/に入れてください！"); }
     const url = new URL(document.URL);
-    let newReviews = createEntries();
+    const newReviews = createEntries();
     newReviews.length ? sendToBackend(newReviews) : console.log("No new reviews found.")
     setInterval(keepButton, 2000)
     if (window.opener && window.opener.tampermonkey === true) { setTimeout(window.close(), 7500); }

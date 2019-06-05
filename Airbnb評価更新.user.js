@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Airbnb評価更新
 // @namespace    https://www.faminect.jp/
-// @version      1.0.1
+// @version      1.0.2
 // @description  Airbnbのページを開けたら、背景でレビュー取得
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/Airbnb%E8%A9%95%E4%BE%A1%E6%9B%B4%E6%96%B0.user.js
@@ -13,8 +13,8 @@
 // ==/UserScript==
 setTimeout(function(){
   window.tampermonkey = true;
-  var last_id = localStorage.getItem("airbnb_last_seen_id") || "";
-  var this_id = decodeURI(document.cookie).match(/rclmd\=\{\"(\d+)\"/);
+  let last_id = localStorage.getItem("airbnb_last_seen_id") || "";
+  let this_id = decodeURI(document.cookie).match(/rclmd\=\{\"(\d+)\"/);
   console.log("TM set: " + window.tampermonkey
               +"\nLast id: "+last_id
               +"\nThis id: "+this_id[1]);

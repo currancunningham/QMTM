@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Booking評価通知
 // @namespace    https://www.faminect.jp/
-// @version      1.2.3
+// @version      1.2.4
 // @description  Bookingレビューページから、新レビュー通知発行・各ホテル詳細レビュー記録取得
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/Booking%E8%A9%95%E4%BE%A1%E9%80%9A%E7%9F%A5.user.js
@@ -137,16 +137,26 @@ function readReviews() {
   var regex = new RegExp(/(.*?)(\d{7})/);
   var reviews = document.querySelectorAll(".bui-table__row");
   var out = [];
-  reviews.forEach(review => {
-    if (JSON.parse(GM_getResourceText('settings')).ignoredProperties.indexOf( review.innerText.match(regex)[2])+1) {
-  	  return;
-  	}
-    var fixMonth = review.innerText.replace(/(\d*)月/, function(p1) {
+  reviews.forEach((r,i) => {
+    if (i < 1) { return; }
+    const hotel_id = r.children[1].textContent.trim();
+    if (JSON.parse(GM_getResourceText('settings')).ignoredProperties.indexOf(hotel_id) + 1) { return; }
+    const date = r.children[0].textContent.trim().replace(/(\d*)月/, function(p1) {
       const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
       return monthNames[(parseInt(p1) - 1)];
-    }).replace(regex,
-             "https://admin.booking.com/hotel/hoteladmin/extranet_ng/manage/reviews.html?hotel_id=$2\n$1");
-    out.push(fixMonth);
+    });
+    const prop_name = r.children[2].textContent.trim();
+    const score = r.children[3].textContent.trim();
+    const text = r.children[4].textContent.trim();
+
+    out.push(`https://admin.booking.com/hotel/hoteladmin/extranet_ng/manage/reviews.html?hotel_id=${hotel_id}
+${date}
+${prop_name}
+
+${score}
+
+${text}`);
+
   });
  return out;
 }

@@ -12,8 +12,8 @@
 setInterval(() => {
   const msg = document.querySelector(".bui-form__error");
   if (msg &&
-      msg.innerText !== "Enter your username" &&
-      msg.innerText !== "ユーザー名を入力してください") {
+      msg.textContent !== "Enter your username" &&
+      msg.textContent !== "ユーザー名を入力してください") {
       return;
   }
   document.getElementsByClassName("bui-button bui-button--primary bui-button--large bui-button--wide")[0].click();

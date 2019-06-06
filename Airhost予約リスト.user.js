@@ -17,12 +17,12 @@
     let output;
     rows.forEach(row => {
         let link = "https://cloud.airhost.co/en/bookings/" + row.childNodes[0].innerHTML.match(/\d{7}/);
-        let guestName = row.childNodes[0].innerText;
-        let CI = row.childNodes[1].innerText.replace(/(.*?)\s(\d*)\s(\d{4})/, "$3." +
-          (months.indexOf(row.childNodes[1].innerText.replace(/(.*?)\s(\d*)\s(\d{4})/, "$1")) + 1) + ".$2");
-        let CO = row.childNodes[2].innerText.replace(/(.*?)\s(\d*)\s(\d{4})/, "$3." +
-          (months.indexOf(row.childNodes[2].innerText.replace(/(.*?)\s(\d*)\s(\d{4})/, "$1")) + 1) + ".$2");
-        let property = row.childNodes[3].innerText;
+        let guestName = row.childNodes[0].textContent;
+        let CI = row.childNodes[1].textContent.replace(/(.*?)\s(\d*)\s(\d{4})/, "$3." +
+          (months.indexOf(row.childNodes[1].textContent.replace(/(.*?)\s(\d*)\s(\d{4})/, "$1")) + 1) + ".$2");
+        let CO = row.childNodes[2].textContent.replace(/(.*?)\s(\d*)\s(\d{4})/, "$3." +
+          (months.indexOf(row.childNodes[2].textContent.replace(/(.*?)\s(\d*)\s(\d{4})/, "$1")) + 1) + ".$2");
+        let property = row.childNodes[3].textContent;
 
         output += property + "\n" + guestName + "\n" + CI + "-" + CO + "\n" + link + "\n\n";
     });

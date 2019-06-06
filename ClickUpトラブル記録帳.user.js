@@ -42,7 +42,7 @@ function requestEntry(entry) {
             w.document.write(res.responseText);
             break;
           default:
-           document.querySelector("#displayStatus").innerText = "　Error!　";
+           document.querySelector("#displayStatus").textContent = "　Error!　";
            console.log("Error: "+json.error.message);
         }
       }
@@ -66,7 +66,7 @@ function displayEntry(entry) {
   document.querySelector('#addInfo').setAttribute('style', ''); //making visible
   const statusButton = document.getElementById("displayStatus");
   statusButton.addEventListener("click", hideTroubles, false);
-  statusButton.innerText = "　シート情報を隠す　";
+  statusButton.textContent = "　シート情報を隠す　";
   statusButton.removeAttribute('disabled');
   document.getElementById("update").addEventListener("click", update, false);
 }
@@ -105,13 +105,13 @@ function addButtons() {
 
 function tryAgain(){
   let button = document.getElementById("displayStatus");
-  if (button.innerText !== "　Loading...　") {
+  if (button.textContent !== "　Loading...　") {
     console.log("Button loaded");
     return;
    }
   console.log("Request to server timed out? Try again?");
   button.removeAttribute('disabled');
-  button.innerText = "　Try Again?　";
+  button.textContent = "　Try Again?　";
   button.addEventListener('click', checkEntry);
 }
 
@@ -120,10 +120,10 @@ function hideTroubles() {
   let myDiv = document.querySelector('#myDiv');
   if (button && myDiv) {
       if (!myDiv.style.display) {
-          button.innerText = "　シート情報を示す　";
+          button.textContent = "　シート情報を示す　";
           myDiv.style.display = "none";
       } else if (myDiv.style.display === "none") {
-          button.innerText = "　シート情報を隠す　";
+          button.textContent = "　シート情報を隠す　";
           myDiv.style.display = "";
       }
   }
@@ -138,7 +138,7 @@ function addInfoToBody() {
 
 function getCreationDate() {
   const a = document.querySelector(".task-history-item__date");
-  const b = a.innerText.match(/(.*?)\s(\d*)\s/);
+  const b = a.textContent.match(/(.*?)\s(\d*)\s/);
   let c;
   b ? c = new Date(b[1] + "/" + b[2]) : c = new Date();
   c.setHours(c.getHours() + 9);
@@ -177,7 +177,7 @@ function update() {
           w.document.write(res.responseText);
           break;
         default:
-          document.querySelector("#displayStatus").innerText = "Error!";
+          document.querySelector("#displayStatus").textContent = "　Error!　";
           console.log("Error: "+json.error);
         }
       }
@@ -189,7 +189,7 @@ function getLS(entrylsno) {
   entrylsno += " "
   const regex = /[^\d](\d{8})[^\d]|[^\d](\d{7})[^\d]|^(\d{8})[^\d]|^(\d{7})[^\d]/;
   if (!entrylsno.match(regex)) {
-    const lsno = document.querySelector(".task-name").innerText.match(regex);
+    const lsno = document.querySelector(".task-name").textContent.match(regex);
     lsno ? outlsno = lsno[1] || lsno[2] || lsno[3] || lsno[4] : outlsno = "";
   } else {
     outlsno = entrylsno.replace(/\s/, "");

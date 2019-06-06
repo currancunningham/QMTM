@@ -67,8 +67,8 @@ function openReviews(hotel_id) {
 }
 
 function createEntries() {
-  const hotel_id = document.querySelector('.prop-info__id').innerText;
-  const hotel_name = document.querySelector('.prop-info__name').innerText;
+  const hotel_id = document.querySelector('.prop-info__id').textContent;
+  const hotel_name = document.querySelector('.prop-info__name').textContent;
   const json = JSON.parse(GM_getResourceText('settings'));
   if (json.ignoredProperties.indexOf(hotel_id) + 1) {
     return [];
@@ -81,15 +81,15 @@ function createEntries() {
   reviews.forEach(this_review => {
     let today_ymd       = new Date().toJSON().slice(0,10).replace(/-/g,'/');
     let reservationCode = this_review.innerHTML.match(/<a name="(.*?)"><\/a>/)[1];
-    let totalScore      = this_review.querySelector('.bui-review-score__badge').innerText;
-    let guestName       = this_review.querySelector('.review-guest-name').innerText;
-    let publicReview    = this_review.querySelector('.review-block-content').innerText || "";
+    let totalScore      = this_review.querySelector('.bui-review-score__badge').textContent;
+    let guestName       = this_review.querySelector('.review-guest-name').textContent;
+    let publicReview    = this_review.querySelector('.review-block-content').textContent || "";
     let categories      = this_review.querySelectorAll('.bui-score-bar__header');
     let locationScore, correctness, checkin, cleanliness, communication, costperformance;
 
     categories.forEach(category => {
-      let this_score = category.querySelector(".bui-score-bar__score").innerText;
-      switch (category.querySelector(".bui-score-bar__title").innerText) {
+      let this_score = category.querySelector(".bui-score-bar__score").textContent;
+      switch (category.querySelector(".bui-score-bar__title").textContent) {
         case "ロケーション":
         case "Location":
           locationScore = this_score;

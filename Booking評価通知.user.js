@@ -138,7 +138,7 @@ function readReviews() {
   var reviews = document.querySelectorAll(".bui-table__row");
   var out = [];
   reviews.forEach((r,i) => {
-    if (i < 1) { return; }
+    if (i < 1) { return; } // ignores 0th 'review'; header row
     const hotel_id = r.children[1].textContent.trim();
     if (JSON.parse(GM_getResourceText('settings')).ignoredProperties.indexOf(hotel_id) + 1) { return; }
     const date = r.children[0].textContent.trim().replace(/(\d*)月/, function(p1) {
@@ -156,7 +156,6 @@ ${prop_name}
 ${score}
 
 ${text}`);
-
   });
  return out;
 }

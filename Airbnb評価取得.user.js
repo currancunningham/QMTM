@@ -44,7 +44,7 @@ function checkAndSend() {
   let json = JSON.parse(GM_getResourceText('settings'));
   let buttons = document.querySelectorAll('button');
   buttons.forEach(b => {
-    if (b.innerText === "+ More") { //Opening up full reviews
+    if (b.textContent === "+ More") { //Opening up full reviews
         b.click();
     }
   });
@@ -55,19 +55,19 @@ function checkAndSend() {
   reviews.forEach(this_review => {
       let today_ymd = new Date().toJSON().slice(0,10).replace(/-/g,'/');
       let totalScore = this_review.querySelector('._atbpe5').innerHTML.match(/aria-label="評価：([\d])／5/)[1];
-      let guestName = this_review.querySelector('._1p3joamp').innerText;
-      let CICO = this_review.querySelector('._1jlnvra2').innerText.match(/[\d]月[\d]*?日/g);
+      let guestName = this_review.querySelector('._1p3joamp').textContent;
+      let CICO = this_review.querySelector('._1jlnvra2').textContent.match(/[\d]月[\d]*?日/g);
       CICO[0] = "2019/" + CICO[0].replace(/日/, '').replace(/月/, '/');
       CICO[1] = "2019/" + CICO[1].replace(/日/, '').replace(/月/, '/');
-      let roomTitle = this_review.querySelectorAll('._1jlnvra2')[1].innerText;
-      let publicReview = this_review.querySelector('._k94v97k').innerText.match(/公開フィードバック\s(.*?)\s公開で返信/)[1];
+      let roomTitle = this_review.querySelectorAll('._1jlnvra2')[1].textContent;
+      let publicReview = this_review.querySelector('._k94v97k').textContent.match(/公開フィードバック\s(.*?)\s公開で返信/)[1];
 
       let privateReviewClass = this_review.querySelector('._1rlifxji');
       let privateReviews = privateReviewClass[0].querySelectorAll('._czm8crp');
       let privateReview;
       privateReviews.forEach(rev => {
-        if(!!rev.innerText) {
-            privateReview += "\n" + rev.innerText;
+        if(!!rev.textContent) {
+            privateReview += "\n" + rev.textContent;
         }
       });
 
@@ -100,8 +100,8 @@ function checkAndSend() {
       let painPointsClass = this_review.querySelectorAll('._114g51qn');
       let painPoints;
       painPointsClass.forEach(painPoint => {
-        if (!!painPointsClass[k].innerText) {
-            painPoints += painPointsClass[k].innerText + " ";
+        if (!!painPointsClass[k].textContent) {
+            painPoints += painPointsClass[k].textContent + " ";
         }
       });
 

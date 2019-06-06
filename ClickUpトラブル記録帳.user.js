@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ClickUpトラブル記録帳
 // @namespace    https://www.faminect.jp/
-// @version      1.2.3
+// @version      1.2.4
 // @description  Clickup画面より↔トラブル管理シートの取扱
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/ClickUp%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E8%A8%98%E9%8C%B2%E5%B8%B3.user.js
@@ -16,7 +16,7 @@
 // ==/UserScript==
 
 function requestEntry(entry) {
-  var lsno = document.getElementById("sheetlsno") ? document.getElementById("sheetlsno").value : "";
+  const lsno = document.getElementById("sheetlsno") ? document.getElementById("sheetlsno").value : "";
   GM_xmlhttpRequest({
       url: JSON.parse(GM_getResourceText('settings')).api.trouble,
       method: "POST",
@@ -27,7 +27,7 @@ function requestEntry(entry) {
       }),
       onload: (res) => {
         console.log(res);
-        var json = {};
+        let json = {};
         res.responseText[0] === "<" ? json.result = "html" : json = JSON.parse(res.responseText)
         console.log("Status: " +json.result);
         switch (json.result) {
@@ -38,12 +38,12 @@ function requestEntry(entry) {
             displayEntry(createEntry(json.data));
             break;
           case "html":
-            var w = window.open("about:blank", "_blank", "");
+            const w = window.open("about:blank", "_blank", "");
             w.document.write(res.responseText);
             break;
           default:
-           document.querySelector("#displayStatus").innerText = "Error!";
-           console.log("Error: "+json.error);
+           document.querySelector("#displayStatus").innerText = "　Error!　";
+           console.log("Error: "+json.error.message);
         }
       }
     });
@@ -51,11 +51,11 @@ function requestEntry(entry) {
 
 function displayEntry(entry) {
   while (true) {
-    var e = document.getElementById("myDiv");
+    let e = document.getElementById("myDiv");
     if (e) { e.remove(); } else { break; }
   }
   Object.keys(entry).forEach((x) => { console.log(x　+ "\n" + entry[x]); })
-  var myDiv = document.createElement('div'),
+  const myDiv = document.createElement('div'),
       cuStyle = window.getComputedStyle(document.querySelector(".task-name-block"), null),
       clickup = {
         backgroundColor: cuStyle.background,
@@ -64,7 +64,7 @@ function displayEntry(entry) {
   myDiv.innerHTML = getHTML(entry, clickup);
   document.querySelector(".task-column_main").appendChild(myDiv);
   document.querySelector('#addInfo').setAttribute('style', ''); //making visible
-  var statusButton = document.getElementById("displayStatus");
+  const statusButton = document.getElementById("displayStatus");
   statusButton.addEventListener("click", hideTroubles, false);
   statusButton.innerText = "　シート情報を隠す　";
   statusButton.removeAttribute('disabled');
@@ -91,10 +91,10 @@ function createEntry(data) {
 
 function addButtons() {
   while (true) {
-    var e = document.getElementById("myButtonDiv");
+    let e = document.getElementById("myButtonDiv");
     if (e) { e.remove(); } else { break; }
   }
-  var myDiv = document.createElement('div');
+  const myDiv = document.createElement('div');
   myDiv.innerHTML = `<div class="cu-task-info cu-task-info_row ng-tns-c3-0 cu-hidden-print ng-star-inserted" id="myButtonDiv">
                        <button id="addInfo" style="display:none">　物件情報追加　</button> <button id="displayStatus" disabled>　Loading...　</button>
                      </div>`;
@@ -104,7 +104,7 @@ function addButtons() {
 }
 
 function tryAgain(){
-  var button = document.getElementById("displayStatus");
+  let button = document.getElementById("displayStatus");
   if (button.innerText !== "　Loading...　") {
     console.log("Button loaded");
     return;
@@ -116,8 +116,8 @@ function tryAgain(){
 }
 
 function hideTroubles() {
-  var button = document.querySelector('#displayStatus');
-  var myDiv = document.querySelector('#myDiv');
+  let button = document.querySelector('#displayStatus');
+  let myDiv = document.querySelector('#myDiv');
   if (button && myDiv) {
       if (!myDiv.style.display) {
           button.innerText = "　シート情報を示す　";
@@ -131,15 +131,15 @@ function hideTroubles() {
 
 function addInfoToBody() {
   console.log("button clicked!")
-  var editor = document.querySelector('.ql-editor');
+  const editor = document.querySelector('.ql-editor');
   editor.click();
   editor.innerHTML += `<div>${sheethostInfo.value}<br /></div><div>${sheetcleaningNumber.value + '\n'}<br /></div><div>${sheetairbnbMail.value}<br /></div>`;
 }
 
 function getCreationDate() {
-  var a = document.querySelector(".task-history-item__date");
-  var b = a.innerText.match(/(.*?)\s(\d*)\s/);
-  var c;
+  const a = document.querySelector(".task-history-item__date");
+  const b = a.innerText.match(/(.*?)\s(\d*)\s/);
+  let c;
   b ? c = new Date(b[1] + "/" + b[2]) : c = new Date();
   c.setHours(c.getHours() + 9);
   c.setYear(2019);
@@ -147,7 +147,7 @@ function getCreationDate() {
 }
 
 function update() {
-  var out = {
+  const out = {
     date: document.getElementById("sheetdate").value.slice(0,10).replace(/-/g, "/"),
     error: document.getElementById("sheeterror").value,
     category: document.getElementById("sheetcategory").value,
@@ -185,11 +185,11 @@ function update() {
 }
 
 function getLS(entrylsno) {
-  var outlsno;
+  let outlsno;
   entrylsno += " "
-  var regex = /[^\d](\d{8})[^\d]|[^\d](\d{7})[^\d]|^(\d{8})[^\d]|^(\d{7})[^\d]/;
+  const regex = /[^\d](\d{8})[^\d]|[^\d](\d{7})[^\d]|^(\d{8})[^\d]|^(\d{7})[^\d]/;
   if (!entrylsno.match(regex)) {
-    var lsno = document.querySelector(".task-name").innerText.match(regex);
+    const lsno = document.querySelector(".task-name").innerText.match(regex);
     lsno ? outlsno = lsno[1] || lsno[2] || lsno[3] || lsno[4] : outlsno = "";
   } else {
     outlsno = entrylsno.replace(/\s/, "");
@@ -265,7 +265,7 @@ function getHTML(entry, clickup) {
 }
 
 function checkEntry() {
-    var a = location.href.match(/(.*)\/([a-z0-9]{5})$/);
+    const a = location.href.match(/(.*)\/([a-z0-9]{5})$/);
     if (a) {
       addButtons();
       requestEntry(a[2]);
@@ -280,6 +280,6 @@ function checkDom() {
 }
 
 if (!GM_getResourceText('settings')) { window.alert("settings.jsonをC:/Program Files/QMTM/に入れてください！"); }
-var oldhref = location.href;
-var checker = setInterval(checkDom, 1500);
+let oldhref = location.href;
+const checker = setInterval(checkDom, 1500);
 setTimeout(checkEntry, 2000);

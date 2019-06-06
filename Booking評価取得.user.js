@@ -30,7 +30,7 @@ function getMatches(string, regex, index) {
 
 function checkKnownReviews(r) {
   const kr = JSON.parse(GM_getValue("reviews", "[]"));
-  const newRev = r.filter(t_r => { return (kr.indexOf(t_r) + 1) === 0; });
+  const newRev = r.filter(t_r => { return (kr.indexOf(t_r) === -1); });
   GM_setValue("reviews", JSON.stringify(kr.concat(newRev))); //returning to cache
   return newRev;
 }
@@ -70,7 +70,7 @@ function createEntries() {
   const hotel_id = document.querySelector('.prop-info__id').textContent;
   const hotel_name = document.querySelector('.prop-info__name').textContent;
   const json = JSON.parse(GM_getResourceText('settings'));
-  if (json.ignoredProperties.indexOf(hotel_id) + 1) {
+  if (json.ignoredProperties.indexOf(hotel_id) !== -1) {
     return [];
   }
 

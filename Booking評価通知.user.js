@@ -38,13 +38,13 @@ function checkDom() {
 function tossHotels(a) {
   return a.filter(r => {
     const ip = JSON.parse(GM_getResourceText('settings')).ignoredProperties;
-    return (ip.indexOf(r.match(/(\d{7})/)[1]) + 1) === 0;
+    return (ip.indexOf(r.match(/(\d{7})/)[1]) === -1);
   });
 }
 
 function checkKnownReviews(r) {
   const kr = JSON.parse(GM_getValue("reviews", "[]"));
-  const newRev = r.filter(t_r => { return (kr.indexOf(t_r) + 1) === 0; });
+  const newRev = r.filter(t_r => { return (kr.indexOf(t_r) === -1); });
   GM_setValue("reviews", JSON.stringify(kr.concat(newRev))); //returning to cache
   return newRev;
 }
@@ -140,7 +140,7 @@ function readReviews() {
   reviews.forEach((r,i) => {
     if (i < 1) { return; } // ignores 0th 'review'; header row
     const hotel_id = r.children[1].textContent.trim();
-    if (JSON.parse(GM_getResourceText('settings')).ignoredProperties.indexOf(hotel_id) + 1) { return; }
+    if (JSON.parse(GM_getResourceText('settings')).ignoredProperties.indexOf(hotel_id) !== -1) { return; }
     const date = r.children[0].textContent.trim().replace(/(\d*)月/, function(p1) {
       const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
       return monthNames[(parseInt(p1) - 1)];
@@ -165,7 +165,7 @@ function readReviewsToClipboard() {
   if (!!reviews.length) {
     GM_setClipboard(reviews.join("\n\n※※※※※\n\n"));
   } else {
-    console.log("No reviews found")
+    console.log("No reviews found");
   }
 }
 
@@ -201,9 +201,9 @@ myDiv.innerHTML = '<button id="exportReviews" type="button">予約エクスポ�
                   <button id="openLinks" type="button">表示物件、全て開ける</button><p>【ホテル除き】</p>';
 
 document.querySelector('.bui-page-header').appendChild(myDiv);
-document.getElementById("openLinks").addEventListener("click", openLinks, false);
-document.getElementById("exportReviews").addEventListener("click", exportReviews, false);
-document.getElementById("getOutdated").addEventListener("click", getOutdated, false);
+document.querySelector("#openLinks").addEventListener("click", openLinks, false);
+document.querySelector("#exportReviews").addEventListener("click", exportReviews, false);
+document.querySelector("#getOutdated").addEventListener("click", getOutdated, false);
 setInterval(replaceLinks, 2000);
 
 const originalTitle = document.title;

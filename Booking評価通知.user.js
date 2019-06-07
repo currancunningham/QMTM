@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Booking評価通知
 // @namespace    https://www.faminect.jp/
-// @version      1.2.5
+// @version      1.2.6
 // @description  Bookingレビューページから、新レビュー通知発行・各ホテル詳細レビュー記録取得
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/Booking%E8%A9%95%E4%BE%A1%E9%80%9A%E7%9F%A5.user.js
@@ -91,6 +91,7 @@ function goodbye() {
   const d = new Date();
   localStorage.setItem("booking_last_seen_time", d.getTime());
   if (window.opener && window.opener.tampermonkey === true) { setTimeout(window.close, 7500); }
+  getOutdated(); //will run in background until it's satisfied or errors
   document.title = originalTitle;
 }
 
@@ -183,7 +184,7 @@ function getOutdated() {
           setTimeout(openReviews, 2500, json.hotel_id);
         }
       } else {
-        window.alert("All properties up to date");
+        window.alert("All properties up to date...\nor an error.\n\nOne of the two!");
       }
     }
   });
@@ -197,13 +198,11 @@ function exportReviews() {
 if (!GM_getResourceText('settings')) { window.alert("settings.jsonをC:/Program Files/QMTM/に入れてください！"); }
 let myDiv       = document.createElement ('div');
 myDiv.innerHTML = '<button id="exportReviews" type="button">予約エクスポート</button><br>\
-                  <button id="getOutdated" type="button">自動レビュー取得</button><br>\
                   <button id="openLinks" type="button">表示物件、全て開ける</button><p>【ホテル除き】</p>';
 
 document.querySelector('.bui-page-header').appendChild(myDiv);
 document.querySelector("#openLinks").addEventListener("click", openLinks, false);
 document.querySelector("#exportReviews").addEventListener("click", exportReviews, false);
-document.querySelector("#getOutdated").addEventListener("click", getOutdated, false);
 setInterval(replaceLinks, 2000);
 
 const originalTitle = document.title;

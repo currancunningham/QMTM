@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Booking評価取得
 // @namespace    https://www.faminect.jp/
-// @version      1.2.3
+// @version      1.2.4
 // @description  Bookingレビューページから取得し、シートまで送る
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/Booking%E8%A9%95%E4%BE%A1%E5%8F%96%E5%BE%97.user.js
@@ -67,8 +67,8 @@ function openReviews(hotel_id) {
 }
 
 function createEntries() {
-  const hotel_id = document.querySelector('.prop-info__id').textContent;
-  const hotel_name = document.querySelector('.prop-info__name').textContent;
+  const hotel_id = document.querySelector('.prop-info__id').textContent.trim();
+  const hotel_name = document.querySelector('.prop-info__name').textContent.trim();
   const json = JSON.parse(GM_getResourceText('settings'));
   if (json.ignoredProperties.indexOf(hotel_id) !== -1) {
     return [];
@@ -81,15 +81,15 @@ function createEntries() {
   reviews.forEach(this_review => {
     let today_ymd       = new Date().toJSON().slice(0,10).replace(/-/g,'/');
     let reservationCode = this_review.innerHTML.match(/<a name="(.*?)"><\/a>/)[1];
-    let totalScore      = this_review.querySelector('.bui-review-score__badge').textContent;
-    let guestName       = this_review.querySelector('.review-guest-name').textContent;
-    let publicReview    = this_review.querySelector('.review-block-content').textContent || "";
+    let totalScore      = this_review.querySelector('.bui-review-score__badge').textContent.trim();
+    let guestName       = this_review.querySelector('.review-guest-name').textContent.trim();
+    let publicReview    = this_review.querySelector('.review-block-content').textContent.trim() || "";
     let categories      = this_review.querySelectorAll('.bui-score-bar__header');
     let locationScore, correctness, checkin, cleanliness, communication, costperformance;
 
     categories.forEach(category => {
-      let this_score = category.querySelector(".bui-score-bar__score").textContent;
-      switch (category.querySelector(".bui-score-bar__title").textContent) {
+      let this_score = category.querySelector(".bui-score-bar__score").textContent.trim();
+      switch (category.querySelector(".bui-score-bar__title").textContent.trim()) {
         case "ロケーション":
         case "Location":
           locationScore = this_score;
@@ -138,11 +138,23 @@ function keepButton() {
     document.getElementById("copyButton").addEventListener("click", copyButton, false);
 }
 
+function checkDom() {
+  const flags = document.getElementsByClassName("review-w-score-breakdown");
+  if (flags.length === 0) {
+    console.log("Loading...")
+    setTimeout(checkDom, 750);
+    return;
+  }
+  console.log("Booking評価取得クライエント online");
+
+  const newReviews = createEntries();
+  newReviews.length ? sendToBackend(newReviews) : console.log("No new reviews found.")
+}
+
 (function(){
     if (!GM_getResourceText('settings')) { window.alert("settings.jsonをC:/Program Files/QMTM/に入れてください！"); }
     const url = new URL(document.URL);
-    const newReviews = createEntries();
-    newReviews.length ? sendToBackend(newReviews) : console.log("No new reviews found.")
+    checkDom();
     setInterval(keepButton, 2000)
     if (window.opener && window.opener.tampermonkey === true) { setTimeout(window.close(), 7500); }
 })();

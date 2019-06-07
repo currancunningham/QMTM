@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Airbnbゲストインフォ
 // @namespace    https://www.faminect.jp/
-// @version      1.1
+// @version      1.2
 // @description  Airbnbからゲストインフォ快速取得
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/Airbnb%E3%82%B2%E3%82%B9%E3%83%88%E3%82%A4%E3%83%B3%E3%83%95%E3%82%A9.user.js
@@ -12,7 +12,7 @@
 // ==/UserScript==
 
 (function() {
-    let els = document.querySelectorAll("a[href*='calendar']");
+    const els = document.querySelectorAll("a[href*='calendar']");
     const listingIop = els[els.length-1].href.match(/\d{8}|\d{7}/);
     const phone = document.querySelector("a[href*='tel']").href;
     const guestName = document.querySelector("._26piifo").textContent;

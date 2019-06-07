@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ClickUpトラブル記録帳
 // @namespace    https://www.faminect.jp/
-// @version      1.2.5
+// @version      1.2.6
 // @description  Clickup画面より↔トラブル管理シートの取扱
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/ClickUp%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E8%A8%98%E9%8C%B2%E5%B8%B3.user.js
@@ -64,7 +64,7 @@ function displayEntry(entry) {
   myDiv.innerHTML = getHTML(entry, clickup);
   document.querySelector(".task-column_main").appendChild(myDiv);
   document.querySelector('#addInfo').setAttribute('style', ''); //making visible
-  const statusButton = document.getElementById("displayStatus");
+  const statusButton = document.querySelector("#displayStatus");
   statusButton.addEventListener("click", hideTroubles, false);
   statusButton.textContent = "　シート情報を隠す　";
   statusButton.removeAttribute('disabled');

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Booking評価通知
 // @namespace    https://www.faminect.jp/
-// @version      1.2.4
+// @version      1.2.5
 // @description  Bookingレビューページから、新レビュー通知発行・各ホテル詳細レビュー記録取得
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/Booking%E8%A9%95%E4%BE%A1%E9%80%9A%E7%9F%A5.user.js
@@ -59,7 +59,7 @@ function sendToBackend(r) {
       onload: (res) => {
         const json = JSON.parse(res.responseText);
         console.log(json);
-        setTimeout(openReviews(json.hotel_id), 2500);
+        setTimeout(openReviews, 2500, json.hotel_id);
         GM_setValue("reviews", JSON.stringify(json.knownReviews));
         goodbye()
       }
@@ -80,7 +80,7 @@ function nothingNewFound() {
     onload: (res) => {
       const json = JSON.parse(res.responseText);
       console.log(json)
-      setTimeout(openReviews(json.hotel_id), 2500);
+      setTimeout(openReviews, 2500, json.hotel_id);
       needUpdate(json);
       goodbye();
     }
@@ -90,7 +90,7 @@ function nothingNewFound() {
 function goodbye() {
   const d = new Date();
   localStorage.setItem("booking_last_seen_time", d.getTime());
-  if (window.opener && window.opener.tampermonkey === true) { window.close(); }
+  if (window.opener && window.opener.tampermonkey === true) { setTimeout(window.close, 7500); }
   document.title = originalTitle;
 }
 
@@ -177,10 +177,10 @@ function getOutdated() {
     onload: (res) => {
       const json = JSON.parse(res.responseText);
       if (json.hotel_id) {
-        setTimeout(getOutdated(), 10000);
+        setTimeout(getOutdated, 10000);
         if (json.hotel_id !== localStorage.getItem("lastHotelId"))  {
           localStorage.setItem("lastHotelId", json.hotel_id);
-          setTimeout(openReviews(json.hotel_id), 2500);
+          setTimeout(openReviews, 2500, json.hotel_id);
         }
       } else {
         window.alert("All properties up to date");

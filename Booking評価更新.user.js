@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Booking評価更新
 // @namespace    https://www.faminect.jp/
-// @version      1.2.4
+// @version      1.2.5
 // @description  Bookingのページを開けたら、背景でレビュー取得
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/Booking%E8%A9%95%E4%BE%A1%E6%9B%B4%E6%96%B0.user.js
@@ -28,10 +28,12 @@ script.type = "text/javascript";
 script.innerHTML=`
 function openHotelPage(id) {
     var thisUrl = new URL(document.URL);
-    window.tampermonkey.destination_id = id;
-    console.log("Got request to open Hotel ID: " + id);
-    window.open('https://admin.booking.com/hotel/hoteladmin/extranet_ng/manage/reviews.html?hotel_id='+id+'&ses='+thisUrl.searchParams.get('ses'), "_blank",
-                'height=80,width=100,left=10000,top=10000,scrollbars=no,status=no');
+    if (id) {
+      window.tampermonkey.destination_id = id;
+      console.log("Got request to open Hotel ID: " + id);
+      window.open('https://admin.booking.com/hotel/hoteladmin/extranet_ng/manage/reviews.html?hotel_id='+id+'&ses='+thisUrl.searchParams.get('ses'), "_blank",
+                  'height=80,width=100,left=10000,top=10000,scrollbars=no,status=no');
+    }
     return thisUrl;
 }
 `;

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Booking評価通知
 // @namespace    https://www.faminect.jp/
-// @version      1.2.6
+// @version      1.2.7
 // @description  Bookingレビューページから、新レビュー通知発行・各ホテル詳細レビュー記録取得
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/Booking%E8%A9%95%E4%BE%A1%E9%80%9A%E7%9F%A5.user.js
@@ -57,62 +57,72 @@ function sendToBackend(r) {
       method: "POST",
       data: JSON.stringify([this_r]),
       onload: (res) => {
+        if (res.responseText[0] === "<") {
+          const w = window.open("about:blank", "_blank", "");
+          w.document.write(res.responseText);
+          return;
+        }
         const json = JSON.parse(res.responseText);
         console.log(json);
-        setTimeout(openReviews, 2500, json.hotel_id);
         GM_setValue("reviews", JSON.stringify(json.knownReviews));
-        goodbye()
+        const d = new Date();
+        localStorage.setItem("booking_last_seen_time", d.getTime());
+         //we set the time here to avoid new windows opening this page again
+         //regular notification updates do NOT mean we need to collect ALL expired props!
+        if (json.hotel_id) { openReviews(json.hotel_id); }
       }
       });
   });
 }
 
 function openReviews(hotel_id) {
-  if (!hotel_id) { return; }
-  unsafeWindow.openHotelPage(hotel_id);
+  if (hotel_id === "None") {
+    goodbye();
+    return;
+  } else if (hotel_id != localStorage.getItem("lastHotelId")) {
+    attempts = 0;
+    localStorage.setItem("lastHotelId", hotel_id);
+    unsafeWindow.openHotelPage(hotel_id);
+  } else if (attempts > 5) {
+    console.log("Same Hotel ID five times... we'll try that page again");
+    localStorage.setItem("lastHotelId", 0); //We'll try opening the page again
+    attempts=0;
+   }
+  attempts++;
+  setTimeout(getUpdate, 20000)
 }
 
-function nothingNewFound() {
-  console.log("No new reviews found");
+function getUpdate() {
+  console.log("Getting update from server...");
   GM_xmlhttpRequest({
     url: JSON.parse(GM_getResourceText('settings')).api.notification,
     method: "GET",
     onload: (res) => {
+      if (res.responseText[0] === "<") {
+        const w = window.open("about:blank", "_blank", "");
+        w.document.write(res.responseText);
+        return;
+      }
       const json = JSON.parse(res.responseText);
+      GM_setValue("reviews", JSON.stringify(json.knownReviews)); //updating cache
       console.log(json)
-      setTimeout(openReviews, 2500, json.hotel_id);
-      needUpdate(json);
-      goodbye();
+      openReviews(json.hotel_id);
     }
   });
 }
 
 function goodbye() {
-  const d = new Date();
-  localStorage.setItem("booking_last_seen_time", d.getTime());
-  if (window.opener && window.opener.tampermonkey === true) { setTimeout(window.close, 7500); }
-  getOutdated(); //will run in background until it's satisfied or errors
+  sendToBackend(['refresh']);
+  console.log("All properties received from GAS");
   document.title = originalTitle;
-}
-
-function needUpdate(json) {
-  GM_setValue("reviews", JSON.stringify(json.knownReviews)); //updating cache
-  const d = new Date();
-  const ud = new Date(parseInt(json.nextUpdate));
-  if (d > ud) {
-    sendToBackend(['refresh'])
-    return true
-  } else {
-    console.log("Nothing new found.\nNext update at: " + ud.toString())
-    return false
-  }
+  if (window.opener && window.opener.tampermonkey === true) { setTimeout(window.close, 7500); }
 }
 
 function getAndSendReviews() {
   const reviews = tossHotels(readReviews());
   if (!!reviews.length) {
     const newReviews = checkKnownReviews(reviews);
-    newReviews.length ? sendToBackend(newReviews) : nothingNewFound();
+    newReviews.length ? sendToBackend(newReviews) : getUpdate();
   }
 }
 
@@ -170,26 +180,6 @@ function readReviewsToClipboard() {
   }
 }
 
-function getOutdated() {
-  console.log("Waiting for Hotel ID...")
-  GM_xmlhttpRequest({
-    url: JSON.parse(GM_getResourceText('settings')).api.notification,
-    method: "GET",
-    onload: (res) => {
-      const json = JSON.parse(res.responseText);
-      if (json.hotel_id) {
-        setTimeout(getOutdated, 10000);
-        if (json.hotel_id !== localStorage.getItem("lastHotelId"))  {
-          localStorage.setItem("lastHotelId", json.hotel_id);
-          setTimeout(openReviews, 2500, json.hotel_id);
-        }
-      } else {
-        window.alert("All properties up to date...\nor an error.\n\nOne of the two!");
-      }
-    }
-  });
-}
-
 function exportReviews() {
   readReviewsToClipboard();
   replaceLinks();
@@ -204,7 +194,7 @@ document.querySelector('.bui-page-header').appendChild(myDiv);
 document.querySelector("#openLinks").addEventListener("click", openLinks, false);
 document.querySelector("#exportReviews").addEventListener("click", exportReviews, false);
 setInterval(replaceLinks, 2000);
-
+let attempts = 0;
 const originalTitle = document.title;
 document.title = "お待ち・・・";
 setTimeout(checkDom, 1500);

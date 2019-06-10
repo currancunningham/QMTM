@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Booking評価取得
 // @namespace    https://www.faminect.jp/
-// @version      1.2.7
+// @version      1.2.8
 // @description  Bookingレビューページから取得し、シートまで送る
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/Booking%E8%A9%95%E4%BE%A1%E5%8F%96%E5%BE%97.user.js
@@ -84,9 +84,15 @@ function createEntries() {
     let totalScore      = this_review.querySelector('.bui-review-score__badge').textContent.trim();
     let guestName       = this_review.querySelector('.review-guest-name').textContent.trim();
     let review_block    = this_review.querySelector('.review-block-content')
-    let publicReview    = review_block ? review_block.textContent.trim() : "";
     let categories      = this_review.querySelectorAll('.bui-score-bar__header');
     let locationScore, correctness, checkin, cleanliness, communication, costperformance;
+
+    let publicReview = "";
+    review_block.childNodes.forEach(el => {
+      if (el.textContent) {
+        publicReview += el.textContent.trim() + "\n"
+      }
+    })
 
     categories.forEach(category => {
       let this_score = category.querySelector(".bui-score-bar__score").textContent.trim();
@@ -122,7 +128,7 @@ function createEntries() {
                        json.sheets.booking.listingNumber, json.sheets.booking.propName,
                        json.sheets.booking.hostName1[0] + hotel_id + json.sheets.booking.hostName1[1], reservationCode,
                        guestName, json.sheets.booking.cleaningCompany, json.sheets.booking.CI, json.sheets.booking.CO,
-                       totalScore, publicReview,"","","","", communication, cleanliness, locationScore,
+                       totalScore, publicReview.trim(),"","","","", communication, cleanliness, locationScore,
                        checkin, correctness, costperformance, today_ymd];
 
     output.push( this_output );

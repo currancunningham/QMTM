@@ -152,7 +152,7 @@ function checkDom() {
 
   const newReviews = createEntries();
   newReviews.length ? sendToBackend(newReviews) : console.log("No new reviews found.")
-if (window.opener && window.opener.tampermonkey === true) { setTimeout(window.close, 7500); }
+  if (window.opener && window.opener.tampermonkey === true) { setTimeout(window.close, 7500); }
 }
 
 (function(){

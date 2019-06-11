@@ -98,6 +98,8 @@ function getUpdate() {
     url: JSON.parse(GM_getResourceText('settings')).api.notification,
     method: "GET",
     onload: (res) => {
+      const d = new Date();
+      localStorage.setItem("booking_last_seen_time", d.getTime());
       if (res.responseText[0] === "<") {
         const w = window.open("about:blank", "_blank", "");
         w.document.write(res.responseText);

@@ -22,4 +22,4 @@ function changeTitle() {
   }
 }
 
-setTimeout(changeTitle, 200)
+setTimeout(changeTitle, 2000)

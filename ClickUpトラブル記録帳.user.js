@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ClickUpトラブル記録帳
 // @namespace    https://www.faminect.jp/
-// @version      1.2.7
+// @version      1.2.8
 // @description  Clickup画面より↔トラブル管理シートの取扱
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/ClickUp%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E8%A8%98%E9%8C%B2%E5%B8%B3.user.js
@@ -180,7 +180,7 @@ function getLS(entrylsno) {
 function html_inputText_constructor(clickup, name, placeholder, value, misc, disabled) {
   var misc = misc || "";
   var disabled = disabled ? " disabled" : "";
-  return `<input type="text" style="background:${clickup.backgroundColor};color:${clickup.color}" name="${name}" id="sheet${name}" placeholder="${placeholder}" value="${value}" ${misc}${disabled}><br />`
+  return `<input type="text" style="background:${clickup.backgroundColor};color:${clickup.color}" name="${name}" id="sheet${name}" placeholder="${placeholder}" value="${value}" ${misc}${disabled}>`;
 }
 
 function getHTML(entry, clickup) {
@@ -194,9 +194,9 @@ function getHTML(entry, clickup) {
     </div>
   </div>
   <div class="task-todo__section" id="sheetContents" >
-    ${html_inputText_constructor(clickup, "hostInfo", "ホストインフォ", entry.host_info, "size=\"110\"", true)}
-    ${html_inputText_constructor(clickup, "cleaningNumber", "清掃番号", entry.cleaning_number, "size=\"70\"", true)}
-    ${html_inputText_constructor(clickup, "airbnbMail", "Airbnbアカウント", entry.airbnb_mail,, true)}
+    ${html_inputText_constructor(clickup, "hostInfo", "ホストインフォ", entry.host_info, "size=\"110\"", true)}<br />
+    ${html_inputText_constructor(clickup, "cleaningNumber", "清掃番号", entry.cleaning_number, "size=\"70\"", true)}<br />
+    ${html_inputText_constructor(clickup, "airbnbMail", "Airbnbアカウント", entry.airbnb_mail, "", true)}
   </div>
   </div>
   <div class="task-todo__header cu-hidden-print">
@@ -204,7 +204,7 @@ function getHTML(entry, clickup) {
     </div>
   </div>
   <div class="task-todo__section" id="sheetContents">
-    ${html_inputText_constructor(clickup, "date", `${entry.date.slice(0,10)}付け記入`,, true)}
+    ${html_inputText_constructor(clickup, "date", `${entry.date.slice(0,10)}付け記入`, "", true)}
     <input style="background:${clickup.backgroundColor};color:${clickup.color}" placeholder="選択してください" id="sheeterror" list="error" value="${entry.error}">
       <datalist id="error">
         <option value="運用前トラブル">
@@ -239,10 +239,10 @@ function getHTML(entry, clickup) {
       </datalist>
 
     ${html_inputText_constructor(clickup, "lsno", "リスティング番号を記載", entry.lsno)}
-    ${html_inputText_constructor(clickup, "property", "自動項目", entry.property,, true)}
-    ${html_inputText_constructor(clickup, "host", "自動項目", entry.host,, true)}
+    ${html_inputText_constructor(clickup, "property", "自動項目", entry.property, 'size="55"', true)}
+    ${html_inputText_constructor(clickup, "host", "自動項目", entry.host, "", true)}<br />
     <textarea style="background:${clickup.backgroundColor};color:${clickup.color}" cols="60" rows="5" placeholder="トラブル内容を記載" name="contents" id="sheetcontents">${entry.contents}</textarea><br>
-    ${html_inputText_constructor(clickup, "contract", "自動項目", entry.contract,, true)}
+    ${html_inputText_constructor(clickup, "contract", "自動項目", entry.contract, "", true)}
     ${html_inputText_constructor(clickup, "memo", "その他メモを記載", entry.memo)}
     <button id="update">更新</button>
   </div>

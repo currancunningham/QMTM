@@ -15,15 +15,14 @@
 // @run-at       document-idle
 // ==/UserScript==
 
-function requestEntry(entry) {
-  const lsno = document.getElementById("sheetlsno") ? document.getElementById("sheetlsno").value : "";
+function handleRequest(entry, lsno, action) {
   GM_xmlhttpRequest({
       url: JSON.parse(GM_getResourceText('settings')).api.trouble,
       method: "POST",
       data: JSON.stringify({
           entry: entry,
-          lsno: getLS(lsno),
-          action: 'get'
+          lsno: lsno,
+          action: action
       }),
       onload: (res) => {
         console.log(res);
@@ -48,6 +47,11 @@ function requestEntry(entry) {
         }
       }
     });
+}
+
+function requestEntry(entry) {
+  const lsno = document.getElementById("sheetlsno") ? document.getElementById("sheetlsno").value : "";
+  handleRequest(entry, getLS(lsno), 'get');
 }
 
 function displayEntry(entry) {
@@ -157,33 +161,7 @@ function update() {
     memo: document.getElementById("sheetmemo").value,
     task_id: location.href.match(/(.*)\/([a-z0-9]{5})$/)[2]
   }
-  GM_xmlhttpRequest({
-    url: JSON.parse(GM_getResourceText('settings')).api.trouble,
-    method: "POST",
-    data: JSON.stringify({
-      entry: out,
-      action: 'update'
-    }),
-    onload: (res) => {
-      console.log(res);
-      var json = {};
-      res.responseText[0] === "<" ? json.result = "html" : json = JSON.parse(res.responseText)
-      console.log("Status: " +json.result);
-      switch (json.result) {
-        case "success":
-          displayEntry(json.data);
-          break;
-        case "html":
-          var w = window.open("about:blank", "_blank", "");
-          w.document.write(res.responseText);
-          break;
-        default:
-          document.querySelector("#displayStatus").textContent = "　Error!　";
-          console.log("Error: "+json.error);
-          checkEntry();
-        }
-      }
-  });
+  handleRequest(out, out.lsno, 'update');
 }
 
 function getLS(entrylsno) {

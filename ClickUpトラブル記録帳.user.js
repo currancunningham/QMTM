@@ -153,12 +153,12 @@ function getCreationDate() {
 
 function update() {
   const out = {
-    date: document.getElementById("sheetdate").value.slice(0,10).replace(/-/g, "/"),
-    error: document.getElementById("sheeterror").value,
-    category: document.getElementById("sheetcategory").value,
-    lsno: document.getElementById("sheetlsno").value,
-    contents: document.getElementById("sheetcontents").value,
-    memo: document.getElementById("sheetmemo").value,
+    date: document.querySelector("#sheetdate").value.slice(0,10).replace(/-/g, "/"),
+    error: document.querySelector("#sheeterror").value,
+    category: document.querySelector("#sheetcategory").value,
+    lsno: document.querySelector("#sheetlsno").value,
+    contents: document.querySelector("s#heetcontents").value,
+    memo: document.querySelector("#sheetmemo").value,
     task_id: location.href.match(/(.*)\/([a-z0-9]{5})$/)[2]
   }
   handleRequest(out, out.lsno, 'update');
@@ -177,6 +177,12 @@ function getLS(entrylsno) {
   return outlsno;
 }
 
+function html_inputText_constructor(clickup, name, placeholder, value, misc, disabled) {
+  var misc = misc || "";
+  var disabled = disabled ? " disabled" : "";
+  return `<input type="text" style="background:${clickup.backgroundColor};color:${clickup.color}" name="${name}" id="sheet${name}" placeholder="${placeholder}" value="${value}" ${misc}${disabled}><br />`
+}
+
 function getHTML(entry, clickup) {
   entry.lsno = getLS(entry.lsno);
 
@@ -188,9 +194,9 @@ function getHTML(entry, clickup) {
     </div>
   </div>
   <div class="task-todo__section" id="sheetContents" >
-    <input type="text" style="background:${clickup.backgroundColor};color:${clickup.color}" name="hostInfo" id="sheethostInfo" placeholder="ホストインフォ" value="${entry.host_info}" size="110" disabled><br />
-    <input type="text" style="background:${clickup.backgroundColor};color:${clickup.color}" name="cleaningNumber" id="sheetcleaningNumber" placeholder="清掃番号" value="${entry.cleaning_number}" size="70" disabled>
-    <input type="text" style="background:${clickup.backgroundColor};color:${clickup.color}" name="airbnbMail" id="sheetairbnbMail" placeholder="Airbnbアカウント" value="${entry.airbnb_mail}" disabled>
+    ${html_inputText_constructor(clickup, "hostInfo", "ホストインフォ", entry.host_info, "size=\"110\"", true)}
+    ${html_inputText_constructor(clickup, "cleaningNumber", "清掃番号", entry.cleaning_number, "size=\"70\"", true)}
+    ${html_inputText_constructor(clickup, "airbnbMail", "Airbnbアカウント", entry.airbnb_mail,, true)}
   </div>
   </div>
   <div class="task-todo__header cu-hidden-print">
@@ -198,7 +204,7 @@ function getHTML(entry, clickup) {
     </div>
   </div>
   <div class="task-todo__section" id="sheetContents">
-    <input type="text" style="background:${clickup.backgroundColor};color:${clickup.color}" name="date" id="sheetdate" id="sheetdate" value="${entry.date.slice(0,10)}付け記入" disabled>
+    ${html_inputText_constructor(clickup, "date", `${entry.date.slice(0,10)}付け記入`,, true)}
     <input style="background:${clickup.backgroundColor};color:${clickup.color}" placeholder="選択してください" id="sheeterror" list="error" value="${entry.error}">
       <datalist id="error">
         <option value="運用前トラブル">
@@ -232,12 +238,12 @@ function getHTML(entry, clickup) {
         <option value="物品問題">
       </datalist>
 
-    <input type="text" style="background:${clickup.backgroundColor};color:${clickup.color}" name="lsno" id="sheetlsno" placeholder="リスティング番号を記載" value="${entry.lsno}">
-    <input type="text" style="background:${clickup.backgroundColor};color:${clickup.color}" name="property" id="sheetproperty" placeholder="自動項目" value="${entry.property}" disabled>
-    <input type="text" style="background:${clickup.backgroundColor};color:${clickup.color}" name="host" id="sheethost" placeholder="自動項目" value="${entry.host}" disabled><br>
+    ${html_inputText_constructor(clickup, "lsno", "リスティング番号を記載", entry.lsno)}
+    ${html_inputText_constructor(clickup, "property", "自動項目", entry.property,, true)}
+    ${html_inputText_constructor(clickup, "host", "自動項目", entry.host,, true)}
     <textarea style="background:${clickup.backgroundColor};color:${clickup.color}" cols="60" rows="5" placeholder="トラブル内容を記載" name="contents" id="sheetcontents">${entry.contents}</textarea><br>
-    <input type="text" style="background:${clickup.backgroundColor};color:${clickup.color}" name="contract" id="sheetcontract" placeholder="自動項目" value="${entry.contract}" disabled>
-    <input type="text" style="background:${clickup.backgroundColor};color:${clickup.color}" name="memo" id="sheetmemo" placeholder="その他メモを記載" value="${entry.memo}">
+    ${html_inputText_constructor(clickup, "contract", "自動項目", entry.contract,, true)}
+    ${html_inputText_constructor(clickup, "memo", "その他メモを記載", entry.memo)}
     <button id="update">更新</button>
   </div>
 </div>

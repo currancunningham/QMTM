@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ClickUpトラブル記録帳
 // @namespace    https://www.faminect.jp/
-// @version      1.2.8
+// @version      1.2.9
 // @description  Clickup画面より↔トラブル管理シートの取扱
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/ClickUp%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E8%A8%98%E9%8C%B2%E5%B8%B3.user.js
@@ -29,6 +29,7 @@ function handleRequest(entry, lsno, action) {
         let json = {};
         res.responseText[0] === "<" ? json.result = "html" : json = JSON.parse(res.responseText)
         console.log("Status: " +json.result);
+        let w;
         switch (json.result) {
           case "success":
             displayEntry(json.data);
@@ -37,7 +38,7 @@ function handleRequest(entry, lsno, action) {
             displayEntry(createEntry(json.data));
             break;
           case "html":
-            const w = window.open("about:blank", "_blank", "");
+            w = window.open("about:blank", "_blank", "");
             w.document.write(res.responseText);
             break;
           default:
@@ -50,7 +51,7 @@ function handleRequest(entry, lsno, action) {
 }
 
 function requestEntry(entry) {
-  const lsno = document.getElementById("sheetlsno") ? document.getElementById("sheetlsno").value : "";
+  const lsno = document.querySelector("#sheetlsno") ? document.querySelector("#sheetlsno").value : "";
   handleRequest(entry, getLS(lsno), 'get');
 }
 
@@ -157,7 +158,7 @@ function update() {
     error: document.querySelector("#sheeterror").value,
     category: document.querySelector("#sheetcategory").value,
     lsno: document.querySelector("#sheetlsno").value,
-    contents: document.querySelector("s#heetcontents").value,
+    contents: document.querySelector("#sheetcontents").value,
     memo: document.querySelector("#sheetmemo").value,
     task_id: location.href.match(/(.*)\/([a-z0-9]{5})$/)[2]
   }

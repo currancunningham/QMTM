@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ClickUpトラブル記録帳
 // @namespace    https://www.faminect.jp/
-// @version      1.2.11
+// @version      1.2.12
 // @description  Clickup画面より↔トラブル管理シートの取扱
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/ClickUp%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E8%A8%98%E9%8C%B2%E5%B8%B3.user.js
@@ -184,6 +184,14 @@ function html_inputText_constructor(clickup, name, placeholder, value, misc, dis
   return `<input type="text" style="background:${clickup.backgroundColor};color:${clickup.color}" name="${name}" id="sheet${name}" placeholder="${placeholder}" value="${value}" ${misc}${disabled}>`;
 }
 
+function html_inputSelector_constructor(clickup, name, placeholder, value, options) {
+  return `
+  <input style="background:${clickup.backgroundColor};color:${clickup.color}" placeholder="${placeholder}" id="sheet${name}" list="${name}" value="${value}">
+    <datalist id="${name}">
+      ${html_options(options)}
+    </datalist>`;
+}
+
 function html_options(options) {
   let out = "";
   options.forEach(opt => {
@@ -198,38 +206,32 @@ function getHTML(entry, clickup) {
   return `
 <div class="task-todo" id="myDiv">
   <div id="breakGlass" style="display:none">
-  <div class="task-todo__header cu-hidden-print">
-   <div class="task-todo__title" id="fakeTitle2" >物件情報
+    <div class="task-todo__header cu-hidden-print">
+      <div class="task-todo__title" id="fakeTitle2" >物件情報
+      </div>
+    </div>
+    <div class="task-todo__section" id="sheetContents" >
+      ${html_inputText_constructor(clickup, "hostInfo", "ホストインフォ", entry.host_info, "size=\"110\"", true)}<br />
+      ${html_inputText_constructor(clickup, "cleaningNumber", "清掃番号", entry.cleaning_number, "size=\"70\"", true)}<br />
+      ${html_inputText_constructor(clickup, "airbnbMail", "Airbnbアカウント", entry.airbnb_mail, "", true)}
     </div>
   </div>
-  <div class="task-todo__section" id="sheetContents" >
-    ${html_inputText_constructor(clickup, "hostInfo", "ホストインフォ", entry.host_info, "size=\"110\"", true)}<br />
-    ${html_inputText_constructor(clickup, "cleaningNumber", "清掃番号", entry.cleaning_number, "size=\"70\"", true)}<br />
-    ${html_inputText_constructor(clickup, "airbnbMail", "Airbnbアカウント", entry.airbnb_mail, "", true)}
-  </div>
-  </div>
+
   <div class="task-todo__header cu-hidden-print">
     <div class="task-todo__title" id="fakeTitle">トラブル管理シート
     </div>
   </div>
+
   <div class="task-todo__section" id="sheetContents">
     ${html_inputText_constructor(clickup, "date", `${entry.date.slice(0,10)}付け記入`, "", true)}
-    <input style="background:${clickup.backgroundColor};color:${clickup.color}" placeholder="選択してください" id="sheeterror" list="error" value="${entry.error}">
-      <datalist id="error">
-        ${html_options(["運用前トラブル","システム＆設定ミス（自社ミス）","システムエラー（サイトミス）",
-        "メッセージミス","その他不可避"])}
-      </datalist>
-
-    <input style="background:${clickup.backgroundColor};color:${clickup.color}" placeholder="選択してください" id="sheetcategory" list="category" value="${entry.category}">
-      <datalist id="category">
-      ${html_options(["破損・汚損", "盗難・紛失","故障","ダブルブッキング","レイトチェックアウト",
-      "清掃不備（リネン汚れ含む）","清掃遅延", "清掃漏れ", "鍵トラブル", "wifiトラブル", "テンプレート・リスティング", "点検",
-      "ゲスト要望（酌量すべき事情含む）", "ホスト要望", "部屋環境・周辺に対する苦情（虫・異臭含む）", "備品購入",
-      "その他", "騒音", "設備問題", "物品問題"])}
-
-
-      </datalist>
-
+    ${html_inputSelector_constructor(clickup, "error", "選択してください", entry.error,
+    ["運用前トラブル","システム＆設定ミス（自社ミス）","システムエラー（サイトミス）",
+    "メッセージミス","その他不可避"])}
+    ${html_inputSelector_constructor(clickup, "category", "選択してください", entry.category,
+    ["破損・汚損", "盗難・紛失","故障","ダブルブッキング","レイトチェックアウト",
+    "清掃不備（リネン汚れ含む）","清掃遅延", "清掃漏れ", "鍵トラブル", "wifiトラブル", "テンプレート・リスティング", "点検",
+    "ゲスト要望（酌量すべき事情含む）", "ホスト要望", "部屋環境・周辺に対する苦情（虫・異臭含む）", "備品購入",
+    "その他", "騒音", "設備問題", "物品問題"])}
     ${html_inputText_constructor(clickup, "lsno", "リスティング番号を記載", entry.lsno)}
     ${html_inputText_constructor(clickup, "property", "自動項目", entry.property, 'size="55"', true)}
     ${html_inputText_constructor(clickup, "host", "自動項目", entry.host, "", true)}<br />
@@ -260,10 +262,14 @@ function checkDom() {
 if (!GM_getResourceText('settings')) { window.alert("settings.jsonをC:/Program Files/QMTM/に入れてください！"); }
 let oldhref = location.href;
 document.addEventListener("mousewheel", (e) => {
+  function tryClick(el) {
+    const button = document.querySelector(el);
+    button ? button.click() : console.log(el + " not found")
+  }
   if (e.deltaX > 0 ) {
-    document.querySelector(".preview-forward").click();
+    tryClick(".preview-forward");
   } else if (e.deltaX < 0) {
-    document.querySelector(".preview-back").click()
+    tryClick(".preview-back");
   }
 });
 const checker = setInterval(checkDom, 1500);

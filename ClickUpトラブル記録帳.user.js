@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ClickUpトラブル記録帳
 // @namespace    https://www.faminect.jp/
-// @version      1.2.9
+// @version      1.2.10
 // @description  Clickup画面より↔トラブル管理シートの取扱
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/ClickUp%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E8%A8%98%E9%8C%B2%E5%B8%B3.user.js
@@ -171,7 +171,7 @@ function getLS(entrylsno) {
   const regex = /[^\d](\d{8})[^\d]|[^\d](\d{7})[^\d]|^(\d{8})[^\d]|^(\d{7})[^\d]/;
   if (!entrylsno.match(regex)) {
     const lsno = document.querySelector(".task-name").textContent.match(regex);
-    lsno ? outlsno = lsno[1] || lsno[2] || lsno[3] || lsno[4] : outlsno = "";
+    lsno ? outlsno = lsno[1] || lsno[2] || lsno[3] || lsno[4] : outlsno = "リスティング番号不明";
   } else {
     outlsno = entrylsno.replace(/\s/, "");
   }

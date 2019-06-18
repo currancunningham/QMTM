@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ClickUpトラブル記録帳
 // @namespace    https://www.faminect.jp/
-// @version      1.2.10
+// @version      1.2.11
 // @description  Clickup画面より↔トラブル管理シートの取扱
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/ClickUp%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E8%A8%98%E9%8C%B2%E5%B8%B3.user.js
@@ -179,9 +179,17 @@ function getLS(entrylsno) {
 }
 
 function html_inputText_constructor(clickup, name, placeholder, value, misc, disabled) {
-  var misc = misc || "";
-  var disabled = disabled ? " disabled" : "";
+  misc = misc || "";
+  disabled = disabled ? " disabled" : "";
   return `<input type="text" style="background:${clickup.backgroundColor};color:${clickup.color}" name="${name}" id="sheet${name}" placeholder="${placeholder}" value="${value}" ${misc}${disabled}>`;
+}
+
+function html_options(options) {
+  let out = "";
+  options.forEach(opt => {
+    out += "<option value=\"" + opt + "\">\n";
+  });
+  return out;
 }
 
 function getHTML(entry, clickup) {
@@ -208,35 +216,18 @@ function getHTML(entry, clickup) {
     ${html_inputText_constructor(clickup, "date", `${entry.date.slice(0,10)}付け記入`, "", true)}
     <input style="background:${clickup.backgroundColor};color:${clickup.color}" placeholder="選択してください" id="sheeterror" list="error" value="${entry.error}">
       <datalist id="error">
-        <option value="運用前トラブル">
-        <option value="システム＆設定ミス（自社ミス）">
-        <option value="システムエラー（サイトミス）">
-        <option value="メッセージミス">
-        <option value="その他不可避">
+        ${html_options(["運用前トラブル","システム＆設定ミス（自社ミス）","システムエラー（サイトミス）",
+        "メッセージミス","その他不可避"])}
       </datalist>
 
     <input style="background:${clickup.backgroundColor};color:${clickup.color}" placeholder="選択してください" id="sheetcategory" list="category" value="${entry.category}">
       <datalist id="category">
-        <option value="破損・汚損">
-        <option value="盗難・紛失">
-        <option value="故障">
-        <option value="ダブルブッキング">
-        <option value="レイトチェックアウト">
-        <option value="清掃不備（リネン汚れ含む）">
-        <option value="清掃遅延">
-        <option value="清掃漏れ">
-        <option value="鍵トラブル">
-        <option value="wifiトラブル">
-        <option value="テンプレート・リスティング">
-        <option value="点検">
-        <option value="ゲスト要望（酌量すべき事情含む）">
-        <option value="ホスト要望">
-        <option value="部屋環境・周辺に対する苦情（虫・異臭含む）">
-        <option value="備品購入">
-        <option value="その他">
-        <option value="騒音">
-        <option value="設備問題">
-        <option value="物品問題">
+      ${html_options(["破損・汚損", "盗難・紛失","故障","ダブルブッキング","レイトチェックアウト",
+      "清掃不備（リネン汚れ含む）","清掃遅延", "清掃漏れ", "鍵トラブル", "wifiトラブル", "テンプレート・リスティング", "点検",
+      "ゲスト要望（酌量すべき事情含む）", "ホスト要望", "部屋環境・周辺に対する苦情（虫・異臭含む）", "備品購入",
+      "その他", "騒音", "設備問題", "物品問題"])}
+
+
       </datalist>
 
     ${html_inputText_constructor(clickup, "lsno", "リスティング番号を記載", entry.lsno)}
@@ -268,5 +259,12 @@ function checkDom() {
 
 if (!GM_getResourceText('settings')) { window.alert("settings.jsonをC:/Program Files/QMTM/に入れてください！"); }
 let oldhref = location.href;
+document.addEventListener("mousewheel", (e) => {
+  if (e.deltaX > 0 ) {
+    document.querySelector(".preview-forward").click();
+  } else if (e.deltaX < 0) {
+    document.querySelector(".preview-back").click()
+  }
+});
 const checker = setInterval(checkDom, 1500);
 setTimeout(checkEntry, 2000);

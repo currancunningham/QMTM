@@ -8,6 +8,7 @@
 // @updateURL    https://github.com/Altigraph/QMTM/raw/master/ClickUp%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E8%A8%98%E9%8C%B2%E5%B8%B3.user.js
 // @include      https://app.clickup.com*
 // @resource     settings file:///C:/Program Files/QMTM/settings.json
+// @resource     mac_settings file:///Users/Shared/settings.json
 // @connect      google.com
 // @connect      googleusercontent.com
 // @grant        GM_xmlhttpRequest
@@ -17,7 +18,7 @@
 
 function handleRequest(entry, lsno, action) {
   GM_xmlhttpRequest({
-      url: JSON.parse(GM_getResourceText('settings')).api.trouble,
+      url: JSON.parse(settings.api.trouble,
       method: "POST",
       data: JSON.stringify({
           entry: entry,
@@ -277,7 +278,16 @@ function checkDom() {
   }
 }
 
-if (!GM_getResourceText('settings')) { window.alert("settings.jsonをC:/Program Files/QMTM/に入れてください！"); }
+let settings;
+if (!GM_getResourceText('settings')) {
+  settings = GM_getResourceText('mac_settings');
+  console.log(settings);
+  if (!settings) {
+    window.alert("settings.jsonをC:/Program Files/QMTM/ (Windows)または/Users/Shared/ (OS X)に入れてください！");
+  }
+} else {
+  settings = GM_getResourceText('settings');
+}
 let oldhref = location.href;
 document.addEventListener("mousewheel", (e) => {
   function tryClick(el) {

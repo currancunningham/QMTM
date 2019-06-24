@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ClickUpトラブル記録帳
 // @namespace    https://www.faminect.jp/
-// @version      1.2.12
+// @version      1.2.13
 // @description  Clickup画面より↔トラブル管理シートの取扱
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/ClickUp%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E8%A8%98%E9%8C%B2%E5%B8%B3.user.js
@@ -35,7 +35,7 @@ function handleRequest(entry, lsno, action) {
             displayEntry(json.data);
             break;
           case "notFound":
-            displayEntry(createEntry(json.data));
+            displayEntry(createEntry(json.data));``
             break;
           case "html":
             w = window.open("about:blank", "_blank", "");
@@ -143,6 +143,10 @@ function addInfoToBody() {
 }
 
 function getCreationDate() {
+  const sheetdate =  document.querySelector("#sheetdate");
+  if (sheetdate && sheetdate.value.slice(0,10).replace(/-/g, "/"))  {
+    return sheetdate.value.slice(0,10).replace(/-/g, "/");
+  }
   const a = document.querySelector(".task-history-item__date");
   const b = a.textContent.trim().match(/(.*?)\s(\d*)\s/);
   let c;
@@ -154,7 +158,7 @@ function getCreationDate() {
 
 function update() {
   const out = {
-    date: document.querySelector("#sheetdate").value.slice(0,10).replace(/-/g, "/"),
+    date: getCreationDate(),
     error: document.querySelector("#sheeterror").value,
     category: document.querySelector("#sheetcategory").value,
     lsno: document.querySelector("#sheetlsno").value,

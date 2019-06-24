@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Airhost予約リスト
 // @namespace    https://www.faminect.jp/
-// @version      1.0.2
+// @version      1.3
 // @description  Airhost予約画面から→すぐにSHARE!
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/Airhost%E4%BA%88%E7%B4%84%E3%83%AA%E3%82%B9%E3%83%88.user.js

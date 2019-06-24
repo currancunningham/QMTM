@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Booking評価通知
 // @namespace    https://www.faminect.jp/
-// @version      1.2.7
+// @version      1.3
 // @description  Bookingレビューページから、新レビュー通知発行・各ホテル詳細レビュー記録取得
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/Booking%E8%A9%95%E4%BE%A1%E9%80%9A%E7%9F%A5.user.js

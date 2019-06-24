@@ -67,7 +67,7 @@ function displayEntry(entry) {
     autoUpdate = true;
   }
   const myDiv = document.createElement('div'),
-      cuStyle = window.(document.querySelector(".task-name-block"), null),
+      cuStyle = window.getComputedStyle(document.querySelector(".task-name-block"), null),
       clickup = {
         backgroundColor: cuStyle.background,
         color: cuStyle.color
@@ -108,7 +108,7 @@ function addButtons() {
   }
   while (true) {
     let e = document.getElementById("myButtonDiv");
-    if (e) {
+     if (e) {
       e.remove();
     } else {
      break;

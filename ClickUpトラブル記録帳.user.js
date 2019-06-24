@@ -56,11 +56,16 @@ function requestEntry(entry) {
 }
 
 function displayEntry(entry) {
+  var autoUpdate = false;
   while (true) {
     let e = document.getElementById("myDiv");
     if (e) { e.remove(); } else { break; }
   }
   Object.keys(entry).forEach((x) => { console.log(x　+ "\n" + entry[x]); })
+  if (entry.date === "") {
+    entry.date = getCreationDate();
+    autoUpdate = true;
+  }
   const myDiv = document.createElement('div'),
       cuStyle = window.getComputedStyle(document.querySelector(".task-name-block"), null),
       clickup = {
@@ -69,6 +74,7 @@ function displayEntry(entry) {
       }
   myDiv.innerHTML = getHTML(entry, clickup);
   document.querySelector(".task-column_main").appendChild(myDiv);
+  if (autoUpdate) { update(); }
   document.querySelector('#addInfo').setAttribute('style', ''); //making visible
   const statusButton = document.querySelector("#displayStatus");
   statusButton.addEventListener("click", hideTroubles, false);

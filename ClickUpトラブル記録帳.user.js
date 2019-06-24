@@ -16,6 +16,15 @@
 // @run-at       document-idle
 // ==/UserScript==
 
+/**
+ * Submits XHR request to server and handles the reply.
+ *
+ * @param {Object}  entry This entry on the spreadsheet.
+ * @param {string} lsno Listing number relevant to this entry, if known.
+ * @param {string}  action Action to request from server ('get' or 'update').
+ *
+ * @return null
+ */
 function handleRequest(entry, lsno, action) {
   GM_xmlhttpRequest({
       url: JSON.parse(settings).api.trouble,
@@ -51,11 +60,27 @@ function handleRequest(entry, lsno, action) {
     });
 }
 
+/**
+ * Attempts to find listing number and request the spreadsheet entry.
+ *
+ * @param {Object}  entry This entry on the spreadsheet.
+ * @return null
+ */
 function requestEntry(entry) {
   const lsno = document.querySelector("#sheetlsno") ? document.querySelector("#sheetlsno").value : "";
   handleRequest(entry, getLS(lsno), 'get');
 }
 
+/**
+ * Takes the entry object and displays its contents on the page.
+ *
+ * Will remove any previously displayed entries, and also attempt to get
+ * the oldest known date and update the spreadsheet if that field is blank.
+ *
+ * @param {Object}  entry This entry on the spreadsheet.
+ *
+ * @return null
+ */
 function displayEntry(entry) {
   var autoUpdate = false;
   while (true) {
@@ -84,6 +109,13 @@ function displayEntry(entry) {
   document.getElementById("update").addEventListener("click", update, false);
 }
 
+/**
+ * Creates a blank entry for use in case this entry was not found on the spreadsheet.
+ *
+ * @param {Object}  data Information returned from spreadsheet.
+ *
+ * @return null
+ */
 function createEntry(data) {
   return {
     cleaning_number: data.cleaning_number,
@@ -101,6 +133,12 @@ function createEntry(data) {
     task_id: location.href.match(/(.*)\/([a-z0-9]{5})$/)[2]
   }
 }
+
+/**
+ * Adds UI buttons to the page.
+ *
+ * @return null
+ */
 
 function addButtons() {
   let toolbar = document.querySelector('.task__toolbar');
@@ -124,6 +162,11 @@ function addButtons() {
   setTimeout(tryAgain, 5000);
 }
 
+/**
+ * Handles try again button
+ *
+ * @return null
+ */
 function tryAgain(){
   let button = document.getElementById("displayStatus");
   if (button.textContent !== "　Loading...　") {
@@ -136,6 +179,11 @@ function tryAgain(){
   button.addEventListener('click', checkEntry);
 }
 
+/**
+ * Handles hide spreadsheet info button
+ *
+ * @return null
+ */
 function hideTroubles() {
   let button = document.querySelector('#displayStatus');
   let myDiv = document.querySelector('#myDiv');
@@ -150,6 +198,11 @@ function hideTroubles() {
   }
 }
 
+/**
+ * Adds information to ClickUp task based on data from spreadsheet.
+ *
+ * @return null
+ */
 function addInfoToBody() {
   console.log("button clicked!")
   const editor = document.querySelector('.ql-editor');
@@ -157,6 +210,11 @@ function addInfoToBody() {
   editor.innerHTML += `<div>${sheethostInfo.value}<br /></div><div>${sheetcleaningNumber.value + '\n'}<br /></div><div>${sheetairbnbMail.value}<br /></div>`;
 }
 
+/**
+ * Attempts to find date of creation for entry and returns YYYY-MM-DD string.
+ *
+ * @return {string} ISO Formatted date string (YYYY-MM-DD).
+ */
 function getCreationDate() {
   const sheetdate =  document.querySelector("#sheetdate");
   if (sheetdate && sheetdate.value.slice(0,10).replace(/-/g, "/"))  {
@@ -171,6 +229,11 @@ function getCreationDate() {
   return c.toISOString().slice(0,10).replace(/-/g, "/");
 }
 
+/**
+ * Updates entry using information input on form
+ *
+ * @return null
+ */
 function update() {
   const out = {
     date: getCreationDate(),
@@ -184,6 +247,13 @@ function update() {
   handleRequest(out, out.lsno, 'update');
 }
 
+/**
+ * Checks that other functions are collecting valid lsno, or attempts to find a valid one.
+ *
+ * @param {string} lsno Listing number relevant to this entry, if known.
+ *
+ * @return {string} Listing number relevant to this entry, if known.
+ */
 function getLS(entrylsno) {
   let outlsno;
   entrylsno += " "
@@ -197,12 +267,36 @@ function getLS(entrylsno) {
   return outlsno;
 }
 
+/**
+ * Creates an HTML Input Text element.
+ *
+ * @param {Object}  clickup Clickup background/text color.
+ * @param {string}  name Name of the element.
+ * @param {string}  placeholder Placeholder text to be used in this field.
+ * @param {string}  value Default value for field (e.g. from spreadsheet).
+ * @param {string}  misc Other misc. HTML parameters, as a string.
+ * @param {boolean} disabled Should field disallow changes?
+ *
+ * @return {string} HTML element as a string
+ */
 function html_inputText_constructor(clickup, name, placeholder, value, misc, disabled) {
   misc = misc || "";
   disabled = disabled ? " disabled" : "";
   return `<input type="text" style="background:${clickup.backgroundColor};color:${clickup.color}" name="${name}" id="sheet${name}" placeholder="${placeholder}" value="${value}" ${misc}${disabled}>`;
 }
 
+
+/**
+ * Creates an HTML Input selector element.
+ *
+ * @param {Object}  clickup Clickup background/text color.
+ * @param {string}  name Name of the element.
+ * @param {string}  placeholder Placeholder text to be used in this field.
+ * @param {string}  value Default value for field (e.g. from spreadsheet).
+ * @param {Array}   options Array of strings to be used as options.
+ *
+ * @return {string} HTML element as a string
+ */
 function html_inputSelector_constructor(clickup, name, placeholder, value, options) {
   return `
   <input style="background:${clickup.backgroundColor};color:${clickup.color}" placeholder="${placeholder}" id="sheet${name}" list="${name}" value="${value}">
@@ -211,6 +305,14 @@ function html_inputSelector_constructor(clickup, name, placeholder, value, optio
     </datalist>`;
 }
 
+
+/**
+ * Creates a list of options for an HTML Datalist.
+ *
+ * @param {Array}   options Array of strings to be used as options.
+ *
+ * @return {string} HTML <option>s as a string.
+ */
 function html_options(options) {
   let out = "";
   options.forEach(opt => {
@@ -219,6 +321,14 @@ function html_options(options) {
   return out;
 }
 
+/**
+ * Creates the HTML template to be added to the page
+ *
+ * @param {Object}  entry   Entry object containing relevant field data.
+ * @param {Object}  clickup Clickup background/text color.
+ *
+ * @return {string} HTML form as a string
+ */
 function getHTML(entry, clickup) {
   entry.lsno = getLS(entry.lsno);
 
@@ -263,6 +373,11 @@ function getHTML(entry, clickup) {
 `;
 }
 
+/**
+ * Checks if page is a valid entry; adds UI buttons and sends server request if so.
+ *
+ * @return null
+ */
 function checkEntry() {
     const a = location.href.match(/(.*)\/([a-z0-9]{5})$/);
     if (a) {
@@ -271,6 +386,11 @@ function checkEntry() {
     }
 }
 
+/**
+ * Checks if the page has updated since last update, and calls checkEntry if so.
+ *
+ * @return null
+ */
 function checkDom() {
   if (location.href !== oldhref) {
       checkEntry();

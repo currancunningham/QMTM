@@ -67,7 +67,7 @@ function displayEntry(entry) {
     autoUpdate = true;
   }
   const myDiv = document.createElement('div'),
-      cuStyle = window.getComputedStyle(document.querySelector(".task-name-block"), null),
+      cuStyle = window.(document.querySelector(".task-name-block"), null),
       clickup = {
         backgroundColor: cuStyle.background,
         color: cuStyle.color
@@ -102,9 +102,17 @@ function createEntry(data) {
 }
 
 function addButtons() {
+  let toolbar = document.querySelector('.task__toolbar');
+  if (!toolbar) {
+   return setTimeout(addButtons, 1000);
+  }
   while (true) {
     let e = document.getElementById("myButtonDiv");
-    if (e) { e.remove(); } else { break; }
+    if (e) {
+      e.remove();
+    } else {
+     break;
+    }
   }
   const myDiv = document.createElement('div');
   myDiv.innerHTML = `<div class="cu-task-info cu-task-info_row ng-tns-c3-0 cu-hidden-print ng-star-inserted" id="myButtonDiv">

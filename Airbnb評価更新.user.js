@@ -11,6 +11,7 @@
 // @grant        none
 // @run-at       document-idle
 // ==/UserScript==
+
 setTimeout(function(){
   window.tampermonkey = true;
   let last_id = localStorage.getItem("airbnb_last_seen_id") || "";

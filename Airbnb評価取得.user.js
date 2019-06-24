@@ -8,6 +8,7 @@
 // @author       草村安隆 Andrew Lucian Thoreson
 // @include      https://www.airbnb.jp/progress/ratings*
 // @resource     settings file:///C:/Program Files/QMTM/settings.json
+// @resource     mac_settings file:///Users/Shared/settings.json
 // @connect      google.com
 // @connect      googleusercontent.com
 // @grant        GM_setClipboard
@@ -30,7 +31,7 @@ function sendToBackend(r) {
   r.forEach((this_r) => {
     console.log("New!\n" + this_r);
     GM_xmlhttpRequest({
-      url: JSON.parse(GM_getResourceText('settings')).api.review,
+      url: JSON.parse(settings).api.review,
       method: "POST",
       data: JSON.stringify(this_r),
       onload: (res) => {
@@ -41,7 +42,7 @@ function sendToBackend(r) {
 }
 
 function checkAndSend() {
-  let json = JSON.parse(GM_getResourceText('settings'));
+  let json = JSON.parse(settings);
   let buttons = document.querySelectorAll('button');
   buttons.forEach(b => {
     if (b.textContent === "+ More") { //Opening up full reviews
@@ -128,4 +129,14 @@ function onLoad() {
 
 setTimeout(checkAndSend, 1500);
 setTimeout(onLoad, 800);
-if (!GM_getResourceText('settings')) { window.alert("settings.jsonをC:/Program Files/QMTM/に入れてください！"); }
+
+let settings;
+if (!GM_getResourceText('settings')) {
+  settings = GM_getResourceText('mac_settings');
+  console.log(settings);
+  if (!settings) {
+    window.alert("settings.jsonをC:/Program Files/QMTM/ (Windows)\nまたは/Users/Shared/ (OS X)に入れて\n,chrome://extensionsにてファイルURLの許可を確認してください");
+  }
+} else {
+  settings = GM_getResourceText('settings');
+}

@@ -8,6 +8,7 @@
 // @updateURL    https://github.com/Altigraph/QMTM/raw/master/Booking%E8%A9%95%E4%BE%A1%E9%80%9A%E7%9F%A5.user.js
 // @include      https://admin.booking.com/hotel/hoteladmin/groups/reviews/index.html*
 // @resource     settings file:///C:/Program Files/QMTM/settings.json
+// @resource     mac_settings file:///Users/Shared/settings.json
 // @connect      google.com
 // @connect      googleusercontent.com
 // @grant        GM_xmlhttpRequest
@@ -37,7 +38,7 @@ function checkDom() {
 
 function tossHotels(a) {
   return a.filter(r => {
-    const ip = JSON.parse(GM_getResourceText('settings')).ignoredProperties;
+    const ip = JSON.parse(settings).ignoredProperties;
     return (ip.indexOf(r.match(/(\d{7})/)[1]) === -1);
   });
 }
@@ -53,7 +54,7 @@ function sendToBackend(r) {
   r.forEach((this_r) => {
     console.log("Send: " + this_r);
     GM_xmlhttpRequest({
-      url: JSON.parse(GM_getResourceText('settings')).api.notification,
+      url: JSON.parse(settings).api.notification,
       method: "POST",
       data: JSON.stringify([this_r]),
       onload: (res) => {
@@ -95,7 +96,7 @@ function openReviews(hotel_id) {
 function getUpdate() {
   console.log("Getting update from server...");
   GM_xmlhttpRequest({
-    url: JSON.parse(GM_getResourceText('settings')).api.notification,
+    url: JSON.parse(settings).api.notification,
     method: "GET",
     onload: (res) => {
       const d = new Date();
@@ -153,7 +154,7 @@ function readReviews() {
   reviews.forEach((r,i) => {
     if (i < 1) { return; } // ignores 0th 'review'; header row
     const hotel_id = r.children[1].textContent.trim();
-    if (JSON.parse(GM_getResourceText('settings')).ignoredProperties.indexOf(hotel_id) !== -1) { return; }
+    if (JSON.parse(settings).ignoredProperties.indexOf(hotel_id) !== -1) { return; }
     const date = r.children[0].textContent.trim().replace(/(\d*)月/, function(p1) {
       const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
       return monthNames[(parseInt(p1) - 1)];
@@ -187,7 +188,16 @@ function exportReviews() {
   replaceLinks();
 }
 
-if (!GM_getResourceText('settings')) { window.alert("settings.jsonをC:/Program Files/QMTM/に入れてください！"); }
+let settings;
+if (!GM_getResourceText('settings')) {
+  settings = GM_getResourceText('mac_settings');
+  console.log(settings);
+  if (!settings) {
+    window.alert("settings.jsonをC:/Program Files/QMTM/ (Windows)\nまたは/Users/Shared/ (OS X)に入れて\n,chrome://extensionsにてファイルURLの許可を確認してください");
+  }
+} else {
+  settings = GM_getResourceText('settings');
+}
 let myDiv       = document.createElement ('div');
 myDiv.innerHTML = '<button id="exportReviews" type="button">予約エクスポート</button><br>\
                   <button id="openLinks" type="button">表示物件、全て開ける</button><p>【ホテル除き】</p>';

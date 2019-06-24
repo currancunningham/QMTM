@@ -8,6 +8,7 @@
 // @updateURL    https://github.com/Altigraph/QMTM/raw/master/Booking%E8%A9%95%E4%BE%A1%E5%8F%96%E5%BE%97.user.js
 // @include      https://admin.booking.com/hotel/hoteladmin/extranet_ng/manage/reviews.html*
 // @resource     settings file:///C:/Program Files/QMTM/settings.json
+// @resource     mac_settings file:///Users/Shared/settings.json
 // @connect      google.com
 // @connect      googleusercontent.com
 // @grant        GM_xmlhttpRequest
@@ -49,7 +50,7 @@ function sendToBackend(r) {
   r.forEach((this_r) => {
     console.log("New!\n" + this_r);
     GM_xmlhttpRequest({
-      url: JSON.parse(GM_getResourceText('settings')).api.review,
+      url: JSON.parse(settings).api.review,
       method: "POST",
       data: JSON.stringify(this_r),
       onload: (res) => {
@@ -63,7 +64,7 @@ function sendToBackend(r) {
 function createEntries() {
   const hotel_id = document.querySelector('.prop-info__id').textContent.trim();
   const hotel_name = document.querySelector('.prop-info__name').textContent.trim();
-  const json = JSON.parse(GM_getResourceText('settings'));
+  const json = JSON.parse(settings);
   if (json.ignoredProperties.indexOf(hotel_id) !== -1) {
     return [];
   }
@@ -155,8 +156,18 @@ function checkDom() {
   if (window.opener && window.opener.tampermonkey === true) { setTimeout(window.close, 7500); }
 }
 
+let settings;
+if (!GM_getResourceText('settings')) {
+  settings = GM_getResourceText('mac_settings');
+  console.log(settings);
+  if (!settings) {
+    window.alert("settings.jsonをC:/Program Files/QMTM/ (Windows)\nまたは/Users/Shared/ (OS X)に入れて\n,chrome://extensionsにてファイルURLの許可を確認してください");
+  }
+} else {
+  settings = GM_getResourceText('settings');
+}
+
 (function(){
-    if (!GM_getResourceText('settings')) { window.alert("settings.jsonをC:/Program Files/QMTM/に入れてください！"); }
     const url = new URL(document.URL);
     checkDom();
     setInterval(keepButton, 2000)

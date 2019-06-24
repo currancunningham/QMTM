@@ -18,7 +18,7 @@
 
 function handleRequest(entry, lsno, action) {
   GM_xmlhttpRequest({
-      url: JSON.parse(settings.api.trouble,
+      url: JSON.parse(settings).api.trouble,
       method: "POST",
       data: JSON.stringify({
           entry: entry,
@@ -283,7 +283,7 @@ if (!GM_getResourceText('settings')) {
   settings = GM_getResourceText('mac_settings');
   console.log(settings);
   if (!settings) {
-    window.alert("settings.jsonをC:/Program Files/QMTM/ (Windows)または/Users/Shared/ (OS X)に入れてください！");
+    window.alert("settings.jsonをC:/Program Files/QMTM/ (Windows)\nまたは/Users/Shared/ (OS X)に入れて\n,chrome://extensionsにてファイルURLの許可を確認してください");
   }
 } else {
   settings = GM_getResourceText('settings');

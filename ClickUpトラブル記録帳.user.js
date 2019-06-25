@@ -402,8 +402,9 @@ function checkDom() {
 let settings = GM_getResourceText('settings') || GM_getResourceText('mac_settings')
 if (!settings) {
     window.alert("settings.jsonをC:/Program Files/QMTM/ (Windows)\n" +
-    "または/Users/Shared/ (OS X)に入れて\n" +
+    "または/Users/Shared/ (OS X)に入れたまま、\n" +
     "chrome://extensionsにてファイルURLの許可を確認してください");
+    throw 'tampermonkey cannot access settings file!';
 }
 
 let oldhref; // Used by checkDom to check for page updates

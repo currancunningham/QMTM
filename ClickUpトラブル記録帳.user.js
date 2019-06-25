@@ -399,7 +399,7 @@ function checkDom() {
 }
 
 // Checking for settings file we need to connect to server
-let settings = GM_getResourceText('settings') || GM_getResourceText('mac_settings')
+let settings = GM_getResourceText('settings') || GM_getResourceText('mac_settings');
 if (!settings) {
     window.alert("settings.jsonをC:/Program Files/QMTM/ (Windows)\n" +
     "または/Users/Shared/ (OS X)に入れたまま、\n" +
@@ -408,6 +408,7 @@ if (!settings) {
 }
 
 let oldhref; // Used by checkDom to check for page updates
+document.addEventListener("transitionstart", checkDom);
 
 // Adds mousewheel side-to-side page flipping
 document.addEventListener("mousewheel", (e) => {
@@ -421,5 +422,3 @@ document.addEventListener("mousewheel", (e) => {
     tryClick(".preview-back");
   }
 });
-
-setInterval(checkDom, 1500);

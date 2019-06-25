@@ -13,7 +13,7 @@
 
 (function() {
     const els = document.querySelectorAll("a[href*='calendar']");
-    const listingIop = els[els.length-1].href.match(/\d{8}|\d{7}/);
+    const listingIop = els[els.length-1].href.match(/\d{7,8}/);
     const phone = document.querySelector("a[href*='tel']").href;
     const guestName = document.querySelector("._26piifo").textContent;
 

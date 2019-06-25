@@ -257,7 +257,7 @@ function update() {
 function getLS(entrylsno) {
   let outlsno;
   entrylsno += " "
-  const regex = /[^\d](\d{8})[^\d]|[^\d](\d{7})[^\d]|^(\d{8})[^\d]|^(\d{7})[^\d]/;
+  const regex = /[^\d](\d{7,8})[^\d]|^(\d{7,8})[^\d]/;
   if (!entrylsno.match(regex)) {
     const lsno = document.querySelector(".task-name").textContent.match(regex);
     lsno ? outlsno = lsno[1] || lsno[2] || lsno[3] || lsno[4] : outlsno = "リスティング番号不明";

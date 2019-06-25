@@ -393,22 +393,22 @@ function checkEntry() {
  */
 function checkDom() {
   if (location.href !== oldhref) {
-      checkEntry();
-      oldhref = location.href
+    oldhref = location.href
+    checkEntry();
   }
 }
 
-let settings;
-if (!GM_getResourceText('settings')) {
-  settings = GM_getResourceText('mac_settings');
-  console.log(settings);
-  if (!settings) {
-    window.alert("settings.jsonをC:/Program Files/QMTM/ (Windows)\nまたは/Users/Shared/ (OS X)に入れて\n,chrome://extensionsにてファイルURLの許可を確認してください");
-  }
-} else {
-  settings = GM_getResourceText('settings');
+// Checking for settings file we need to connect to server
+let settings = GM_getResourceText('settings') || GM_getResourceText('mac_settings')
+if (!settings) {
+    window.alert("settings.jsonをC:/Program Files/QMTM/ (Windows)\n" +
+    "または/Users/Shared/ (OS X)に入れて\n" +
+    "chrome://extensionsにてファイルURLの許可を確認してください");
 }
-let oldhref = location.href;
+
+let oldhref; // Used by checkDom to check for page updates
+
+// Adds mousewheel side-to-side page flipping
 document.addEventListener("mousewheel", (e) => {
   function tryClick(el) {
     const button = document.querySelector(el);
@@ -420,5 +420,5 @@ document.addEventListener("mousewheel", (e) => {
     tryClick(".preview-back");
   }
 });
-const checker = setInterval(checkDom, 1500);
-setTimeout(checkEntry, 2000);
+
+setInterval(checkDom, 1500);

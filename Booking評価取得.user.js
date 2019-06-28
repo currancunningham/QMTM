@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Booking評価取得
 // @namespace    https://www.faminect.jp/
-// @version      1.3
+// @version      1.3.1
 // @description  Bookingレビューページから取得し、シートまで送る
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/Booking%E8%A9%95%E4%BE%A1%E5%8F%96%E5%BE%97.user.js
@@ -65,9 +65,11 @@ function createEntries() {
   const hotel_id = document.querySelector('.prop-info__id').textContent.trim();
   const hotel_name = document.querySelector('.prop-info__name').textContent.trim();
   const json = JSON.parse(settings);
-  if (json.ignoredProperties.indexOf(hotel_id) !== -1) {
-    return [];
-  }
+  // if (json.ignoredProperties.indexOf(hotel_id) !== -1) {
+  //   return [];
+  // } For now, we don't want to ignore Half Glamping Hoshioto,
+  // and we probably don't need to worry about users going to HD property review pages
+  // but this can be adjusted for No Notification Yes Review properties later
 
   const reviews = document.querySelectorAll('.review-w-score-breakdown');
   let i;

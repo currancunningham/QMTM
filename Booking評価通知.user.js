@@ -188,16 +188,25 @@ function exportReviews() {
   replaceLinks();
 }
 
-let settings;
-if (!GM_getResourceText('settings')) {
-  settings = GM_getResourceText('mac_settings');
-  console.log(settings);
-  if (!settings) {
-    window.alert("settings.jsonをC:/Program Files/QMTM/ (Windows)\nまたは/Users/Shared/ (OS X)に入れて\n,chrome://extensionsにてファイルURLの許可を確認してください");
-  }
-} else {
-  settings = GM_getResourceText('settings');
+// Checking for settings file we need to connect to server
+let settings = GM_getResourceText('settings') || GM_getResourceText('mac_settings');
+if (!settings) {
+    window.alert("settings.jsonをC:/Program Files/QMTM/ (Windows)\n" +
+    "または/Users/Shared/ (OS X)に入れたまま、\n" +
+    "chrome://extensionsにてファイルURLの許可を確認してください");
+    throw 'tampermonkey cannot access settings file!';
+} else if(JSON.parse(settings).ver || JSON.parse(settings).ver < 1) {
+  //ver == FALSE to be implemented on next settings.json update
+   window.alert("settings.jsonはすでに更新しています！Slackより最新バージョンを装備してください。");
+   throw 'settings file out of date!'
 }
+
+//ver == FALSE to be implemented on next settings.json update
+if(JSON.parse(settings).ver || JSON.parse(settings).ver < 1) {
+   window.alert("settings.jsonはすでに更新しています！Slackより最新バージョンを装備してください。");
+   throw 'settings file out of date!'
+}
+
 let myDiv       = document.createElement ('div');
 myDiv.innerHTML = '<button id="exportReviews" type="button">予約エクスポート</button><br>\
                   <button id="openLinks" type="button">表示物件、全て開ける</button><p>【ホテル除き】</p>';

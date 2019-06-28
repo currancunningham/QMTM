@@ -158,15 +158,17 @@ function checkDom() {
   if (window.opener && window.opener.tampermonkey === true) { setTimeout(window.close, 7500); }
 }
 
-let settings;
-if (!GM_getResourceText('settings')) {
-  settings = GM_getResourceText('mac_settings');
-  console.log(settings);
-  if (!settings) {
-    window.alert("settings.jsonをC:/Program Files/QMTM/ (Windows)\nまたは/Users/Shared/ (OS X)に入れて\n,chrome://extensionsにてファイルURLの許可を確認してください");
-  }
-} else {
-  settings = GM_getResourceText('settings');
+// Checking for settings file we need to connect to server
+let settings = GM_getResourceText('settings') || GM_getResourceText('mac_settings');
+if (!settings) {
+    window.alert("settings.jsonをC:/Program Files/QMTM/ (Windows)\n" +
+    "または/Users/Shared/ (OS X)に入れたまま、\n" +
+    "chrome://extensionsにてファイルURLの許可を確認してください");
+    throw 'tampermonkey cannot access settings file!';
+} else if(JSON.parse(settings).ver || JSON.parse(settings).ver < 1) {
+  //ver == FALSE to be implemented on next settings.json update
+   window.alert("settings.jsonはすでに更新しています！Slackより最新バージョンを装備してください。");
+   throw 'settings file out of date!'
 }
 
 (function(){

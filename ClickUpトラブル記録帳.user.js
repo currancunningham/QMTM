@@ -436,8 +436,7 @@ if (!settings) {
     "または/Users/Shared/ (OS X)に入れたまま、\n" +
     "chrome://extensionsにてファイルURLの許可を確認してください");
     throw 'tampermonkey cannot access settings file!';
-} else if(JSON.parse(settings).ver || JSON.parse(settings).ver < 1) {
-  //ver == FALSE to be implemented on next settings.json update
+} else if(!JSON.parse(settings).ver || JSON.parse(settings).ver < 1) {
    window.alert("settings.jsonはすでに更新しています！Slackより最新バージョンを装備してください。");
    throw 'settings file out of date!'
 }

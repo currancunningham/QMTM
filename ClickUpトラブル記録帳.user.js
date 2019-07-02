@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ClickUpトラブル記録帳
 // @namespace    https://www.faminect.jp/
-// @version      1.3
+// @version      1.3.1
 // @description  Clickup画面より↔トラブル管理シートの取扱
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/ClickUp%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E8%A8%98%E9%8C%B2%E5%B8%B3.user.js
@@ -130,7 +130,7 @@ function createEntry(data) {
     contents: '',
     contract: '',
     memo: '',
-    task_id: location.href.match(/(.*)\/([a-z0-9]{5})$/)[2]
+    task_id: location.href.match(/(.*)\/([a-z0-9]{5,})$/)[2]
   }
 }
 
@@ -242,7 +242,7 @@ function update() {
     lsno: document.querySelector("#sheetlsno").value,
     contents: document.querySelector("#sheetcontents").value,
     memo: document.querySelector("#sheetmemo").value,
-    task_id: location.href.match(/(.*)\/([a-z0-9]{5})$/)[2]
+    task_id: location.href.match(/(.*)\/([a-z0-9]{5,})$/)[2]
   }
   handleRequest(out, out.lsno, 'update');
 }
@@ -379,7 +379,7 @@ function getHTML(entry, clickup) {
  * @return null
  */
 function checkEntry() {
-    const a = location.href.match(/(.*)\/([a-z0-9]{5})$/);
+    const a = location.href.match(/(.*)\/([a-z0-9]{5,})$/);
     if (a) {
       addButtons();
       requestEntry(a[2]);

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ClickUpトラブル記録帳
 // @namespace    https://www.faminect.jp/
-// @version      1.3.1
+// @version      1.3.2
 // @description  Clickup画面より↔トラブル管理シートの取扱
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/ClickUp%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E8%A8%98%E9%8C%B2%E5%B8%B3.user.js
@@ -104,7 +104,7 @@ function displayEntry(entry) {
   document.querySelector('#addInfo').setAttribute('style', ''); //making visible
   const statusButton = document.querySelector("#displayStatus");
   statusButton.addEventListener("click", hideTroubles, false);
-  statusButton.textContent = "　シート情報を隠す　";
+  statusButton.textContent = "　情報を隠す　";
   statusButton.removeAttribute('disabled');
   document.getElementById("update").addEventListener("click", update, false);
 }
@@ -155,10 +155,11 @@ function addButtons() {
   }
   const myDiv = document.createElement('div');
   myDiv.innerHTML = `<div class="cu-task-info cu-task-info_row ng-tns-c3-0 cu-hidden-print ng-star-inserted" id="myButtonDiv">
-                       <button id="addInfo" style="display:none">　物件情報追加　</button> <button id="displayStatus" disabled>　Loading...　</button>
+                       <button id="addInfo" style="display:none">　物件情報追加　</button> <button id="displayStatus" disabled>　(ー) Loading 　</button>
                      </div>`;
   document.querySelector('.task__toolbar').appendChild(myDiv);
   document.getElementById("addInfo").addEventListener('click', addInfoToBody);
+  spinner(document.querySelector("#displayStatus"));
   setTimeout(tryAgain, 5000);
 }
 
@@ -189,10 +190,10 @@ function hideTroubles() {
   let myDiv = document.querySelector('#myDiv');
   if (button && myDiv) {
       if (!myDiv.style.display) {
-          button.textContent = "　シート情報を示す　";
+          button.textContent = "　情報を示す　";
           myDiv.style.display = "none";
       } else if (myDiv.style.display === "none") {
-          button.textContent = "　シート情報を隠す　";
+          button.textContent = "　情報を隠す　";
           myDiv.style.display = "";
       }
   }
@@ -230,11 +231,41 @@ function getCreationDate() {
 }
 
 /**
- * Updates entry using information input on form
+ * I'll try spinning.
+ *
+ * That's a cool trick.
+ *
+ * @param {Object} el DOM element
+ *
+ * @return {numeric} ID of setInterval
+ */
+
+function spinner(el){
+  return setInterval(function(){
+    el.innerHTML = el.innerHTML.replace(/(丨|＼|ー|／)/,  function(p1){
+     switch (p1) {
+       case "丨":
+         return "／";
+       case "＼":
+         return "丨";
+       case "ー":
+         return "＼";
+       case "／":
+         return "ー";
+       }
+     });
+  }, 110);
+}
+
+/**
+ * Updates entry using information input on form.
  *
  * @return null
  */
 function update() {
+  var upButton = document.querySelector("#update");
+  upButton.innerHTML = " ／ ";
+  spinner(upButton);
   const out = {
     date: getCreationDate(),
     error: document.querySelector("#sheeterror").value,

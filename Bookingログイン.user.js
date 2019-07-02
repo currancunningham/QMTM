@@ -11,7 +11,7 @@
 
 // ==/UserScript==
 
-(function clickButton (){
+function clickButton (){
   setInterval(() => {
       const msg = document.querySelector(".bui-form__error");
       const button = document.querySelector(".bui-button--primary");
@@ -25,4 +25,6 @@
       }
   }, 200);
   setTimeout(window.close, 7500);
-})();
+}
+
+document.addEventListener('transitionend', clickButton);

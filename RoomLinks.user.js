@@ -4,8 +4,8 @@
 // @version      0.3
 // @description  部屋の各サイト、繋がっていこう
 // @author       草村安隆 Andrew Lucian Thoreson
-// @downloadURL
-// @updateURL
+// @downloadURL  https://github.com/Altigraph/QMTM/raw/master/RoomLinks.user.js
+// @updateURL    https://github.com/Altigraph/QMTM/raw/master/RoomLinks.user.js
 // @include      https://app.clickup.com*
 // @resource     settings file:///C:/Program Files/QMTM/settings.json
 // @resource     mac_settings file:///Users/Shared/settings.json

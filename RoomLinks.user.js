@@ -34,12 +34,14 @@ function handleRequest(query) {
       onload: (res) => {
         oldel = el;
         console.log(res);
+        console.log(res.responseText)
         let json = {};
         if (res.responseText[0] === "<") {
             const w = window.open("about:blank", "_blank", "");
             w.document.write(res.responseText);
             return;
         }
+
         json = JSON.parse(res.responseText)
         displayEntry(json);
         }
@@ -99,7 +101,6 @@ function sendRequestForPage() {
   const path = document.location.pathname;
   switch (window.location.host) {
     case "app.clickup.com": {
-      console.log("Room Links userscript started for clickup");
       el1 = document.querySelector("input[name=lsno]");
       if (el1) {
         query = "Airbnb=" + el1.value;
@@ -109,7 +110,6 @@ function sendRequestForPage() {
       break;
     }
     case "cloud.airhost.co": {
-      console.log("Room Links userscript started for airhost");
       if (path.match(/houses/)) {
         query = extractLsnoTextContent("[selected=selected]");
       }
@@ -161,12 +161,16 @@ function checkDom(){
       check_element = ".navigation-header";
       break;
     case "mail.google.com":
-      console.log("Attempting to load on Google...")
       check_element = "table[class^='m_']";
       break;
   }
   el = document.querySelector(check_element)
   if (el === oldel) { return; }
+  console.log("check_element updated")
+  while (true) {
+    let e = document.querySelector("#roomLinksDiv");
+    if (e) { e.remove(); } else { break; }
+  }
   el ?  sendRequestForPage() : setTimeout(checkDom, 2000);
 }
 

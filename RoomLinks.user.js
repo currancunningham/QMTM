@@ -54,18 +54,7 @@ function displayEntry(entry) {
     if (e) { e.remove(); } else { break; }
   }
   const myDiv = document.createElement('div');
-  let appendPlace;
-  switch (window.location.host) {
-    case "app.clickup.com":
-      appendPlace = ".task-column__body-toolbar";
-      break;
-    case "cloud.airhost.co":
-      appendPlace = ".navigation-header";
-      break;
-    case "mail.google.com":
-      appendPlace = ".hP";
-      break;
-  }
+  const appendPlace = getSiteInfo(window.location.host, 'append-parent');
   myDiv.innerHTML = getHTML(entry);
   document.querySelector(appendPlace).appendChild(myDiv);
 }
@@ -94,35 +83,6 @@ function getHTML(entry) {
 `;
 }
 
-function sendRequestForPage() {
-  let query,
-      el1,
-      tmp;
-  const path = document.location.pathname;
-  switch (window.location.host) {
-    case "app.clickup.com": {
-      el1 = document.querySelector("input[name=lsno]");
-      if (el1) {
-        query = "Airbnb=" + el1.value;
-      } else {
-        query = extractLsnoTextContent(".task-name");
-      }
-      break;
-    }
-    case "cloud.airhost.co": {
-      if (path.match(/houses/)) {
-        query = extractLsnoTextContent("[selected=selected]");
-      }
-      break;
-    }
-    case "mail.google.com": {
-      query = extractLsnoTextContent("table[class^='m_']");
-      break;
-    }
-  }
-  console.log("Query is: "+query)
-  query ?　handleRequest(query) : console.log("No room-id found...");
-}
 
 function extractLsnoTextContent(css_query) {
   const lsnoRegex = /[^\d](\d{7,8})[^\d]|^(\d{7,8})[^\d]|[^\d](\d{7,8})$/;
@@ -130,7 +90,7 @@ function extractLsnoTextContent(css_query) {
   const tmp = text_el ? text_el.textContent.match(lsnoRegex) : console.log("CSS Query not found...");
   if (text_el) {
     const lsno = tmp[1]|tmp[2]|tmp[3];
-    return "Airbnb=" + lsno;
+    return lsno;
   }
   return null
 }
@@ -148,22 +108,38 @@ if (!settings) {
   console.log("settings.json load success")
 }
 
-let oldel,
-    el;
+
+
+function sendRequestForPage() {
+  const selector = getSiteInfo(window.location.host, 'lsno-container');
+  const query = "Airbnb=" + extractLsnoTextContent(selector);
+  console.log("Query is: "+query)
+  query ?　handleRequest(query) : console.log("No room-id found...");
+}
+
+function getSiteInfo(site, info) {
+  const sites = {
+    'app.clickup.com': {
+      'dom-element': '.task-name',
+      'lsno-container': '.task-name',
+      'append-parent': '.task-column__body-toolbar'
+    },
+    'cloud.airhost.co': {
+      'dom-element': '.navigation-header',
+      'lsno-container': '[selected=selected]',
+      'append-parent': '.navigation-header'
+    },
+    'mail.google.com': {
+      'dom-element': 'table[class^=\'m_\']',
+      'lsno-container': 'table[class^=\'m_\']',
+      'append-parent': '.hP'
+    }
+  }
+  return sites[site][info] ? sites[site][info] : null;
+}
 
 function checkDom(){
-  let check_element;
-  switch (window.location.host) {
-    case "app.clickup.com":
-      check_element = ".task-name";
-      break;
-    case "cloud.airhost.co":
-      check_element = ".navigation-header";
-      break;
-    case "mail.google.com":
-      check_element = "table[class^='m_']";
-      break;
-  }
+  const check_element = getSiteInfo(window.location.host, 'dom-element');
   el = document.querySelector(check_element)
   if (el === oldel) { return; }
   console.log("check_element updated")
@@ -171,8 +147,10 @@ function checkDom(){
     let e = document.querySelector("#roomLinksDiv");
     if (e) { e.remove(); } else { break; }
   }
-  el ?  sendRequestForPage() : setTimeout(checkDom, 2000);
+  el ? sendRequestForPage() : setTimeout(checkDom, 2000);
 }
 
+let oldel,
+    el;
 document.addEventListener("transitionstart", checkDom);
 setTimeout(checkDom, 3000);

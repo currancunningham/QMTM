@@ -100,6 +100,9 @@ function displayEntry(entry) {
       }
   myDiv.innerHTML = getHTML(entry, clickup);
   document.querySelector(".task-column_main").appendChild(myDiv);
+  const rlEvernote = document.querySelector("#RL-Evernote");
+  if (rlEvernote) { rlEvernote.setAttribute('href',
+   `https://www.evernote.com/client/web?usernameImmutable=false&login=&login=Sign+in&login=true&#?query=${entry.lsno}`); }
   if (autoUpdate) { update(); }
   document.querySelector('#addInfo').setAttribute('style', ''); //making visible
   const statusButton = document.querySelector("#displayStatus");
@@ -393,6 +396,7 @@ function getHTML(entry, clickup) {
     "ゲスト要望（酌量すべき事情含む）", "ホスト要望", "部屋環境・周辺に対する苦情（虫・異臭含む）", "備品購入",
     "その他", "騒音", "設備問題", "物品問題"])}
     ${html_inputText_constructor(clickup, "lsno", "リスティング番号を記載", entry.lsno)}
+    <div id="hidden-lsno" style="display:none">${entry.lsno}</div>
     ${html_inputText_constructor(clickup, "property", "自動項目", entry.property, 'size="55"', true)}
     ${html_inputText_constructor(clickup, "host", "自動項目", entry.host, "", true)}<br />
     <textarea style="background:${clickup.backgroundColor};color:${clickup.color}" cols="60" rows="5" placeholder="トラブル内容を記載" name="contents" id="sheetcontents">${entry.contents}</textarea><br>
@@ -439,6 +443,8 @@ if (!settings) {
 } else if(!JSON.parse(settings).ver || JSON.parse(settings).ver < 1) {
    window.alert("settings.jsonはすでに更新しています！Slackより最新バージョンを装備してください。");
    throw 'settings file out of date!'
+} else {
+  console.log("settings.json load success")
 }
 
 let oldhref; // Used by checkDom to check for page updates

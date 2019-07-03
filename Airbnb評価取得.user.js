@@ -140,4 +140,6 @@ if (!settings) {
 } else if(!JSON.parse(settings).ver || JSON.parse(settings).ver < 1) {
    window.alert("settings.jsonはすでに更新しています！Slackより最新バージョンを装備してください。");
    throw 'settings file out of date!'
+} else {
+  console.log("settings.json load success")
 }

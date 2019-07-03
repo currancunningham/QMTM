@@ -25,12 +25,9 @@
  *
  * @return null
  */
-function handleRequest(entry) {
+function handleRequest(query) {
   GM_xmlhttpRequest({
-      url: JSON.parse(settings).api.dev.roomlinks + "?Airbnb=" + entry.Airbnb,
-      headers: {
-        entry
-      },
+      url: JSON.parse(settings).api.dev.roomlinks + "?" + query,
       method: "GET",
       onload: (res) => {
         console.log(res);
@@ -65,6 +62,15 @@ function displayEntry(entry) {
 function getHTML(entry) {
   return `
   <div id="roomLinksDiv">
+  <style>
+  .RL-link {
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 3px;
+    margin: 6px;
+    padding: 6px
+  }
+  </style>
   <a id="RL-Evernote" class="RL-link" href="https://www.evernote.com/client/web?usernameImmutable=false&login=&login=Sign+in&login=true&#?query=${entry.Airbnb}">Evernote</a>
   <a id="RL-Airhost"  class="RL-link" href="https://cloud.airhost.co/en/houses/${entry.Airhost.house}/rooms/${entry.Airhost.room}/pricings">Airhost</a>
   <!-- <a id="RL-Airbnb"   class="RL-link" href= "https://www.airbnb.com/rooms/${entry.Airbnb}">Airbnb</a>
@@ -76,15 +82,22 @@ function getHTML(entry) {
 }
 
 function sendRequestForPage() {
-  let key;
-  let element;
+  let query,
+      tm_element,
+      cu_title;
   switch (window.location.host) {
-    case "app.clickup.com":
-      element = document.querySelector("input[name=lsno]");
-      key =  {Airbnb: element && element.value || document.querySelector(".task-name").textContent.match( /[^\d](\d{7,8})[^\d]|^(\d{7,8})[^\d]/)[1]};
+    case "app.clickup.com": {
+      tm_element = document.querySelector("input[name=lsno]");
+      cu_title = document.querySelector(".task-name");
+      if (tm_element) {
+        query = "Airbnb=" + tm_element.value;
+      } else if (cu_title) {
+        query = "Airbnb=" + cu_title.textContent.match( /[^\d](\d{7,8})[^\d]|^(\d{7,8})[^\d]/)[1];
+      }
       break;
+    }
   }
-  key ? handleRequest(key) : console.log("No room-id found...");
+  query ?　handleRequest(query) : console.log("No room-id found...");
 }
 
 let settings = GM_getResourceText('settings') || GM_getResourceText('mac_settings');

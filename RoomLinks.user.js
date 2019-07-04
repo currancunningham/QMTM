@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Room Links
 // @namespace    https://www.faminect.jp/
-// @version      0.5
+// @version      0.6
 // @description  部屋の各サイト、繋がっていこう
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/RoomLinks.user.js
@@ -10,6 +10,7 @@
 // @include      https://cloud.airhost.co*
 // @include      https://mail.google.com*
 // @include      https://admin.booking.com*
+// @include      https://www.evernote.com*
 // @resource     settings file:///C:/Program Files/QMTM/settings.json
 // @resource     mac_settings file:///Users/Shared/settings.json
 // @connect      google.com
@@ -34,7 +35,7 @@ function handleRequest(query) {
       url: JSON.parse(settings).api.dev.roomlinks + "?" + query,
       method: "GET",
       onload: (res) => {
-        oldel = el.textContent;
+        oldel = el.textContent !== null ? el.textContent : "Not found";
         let json = {};
         if (res.responseText[0] === "<") {
             const w = window.open("about:blank", "_blank", "");
@@ -42,18 +43,30 @@ function handleRequest(query) {
             return;
         }
         json = JSON.parse(res.responseText)
-        json.Airbnb ? displayEntry(json) : console.log('Bad response from server: ' + json.response);
+        json.Airbnb ? displayEntry(json) : badEntry(json.response);
         }
       });
 }
 
-function displayEntry(entry) {
-  if (entry.Airbnb === olden) { return; }
+function badEntry(msg) {
+  console.log('Bad response from server: ' + JSON.stringify(msg));
+  olden = "";
+  removeOldEntry();
+}
+
+function removeOldEntry() {
   while (true) {
     let e = document.querySelector("#roomLinksDiv");
     if (e) { e.remove(); } else { break; }
   }
+}
+
+function displayEntry(entry) {
+  if (entry.Airbnb === olden) { return; }
+  removeOldEntry();
   olden = entry.Airbnb;
+  entry.Airbnb.match(/\d{7,8}/) ? GM_addStyle(' #RL-Airbnb { display:;  }') : GM_addStyle(' #RL-Airbnb { display: none;  }') ;
+  entry.Booking.hotel_id.match(/\d{7}/) ? GM_addStyle(' #RL-Booking { display:;  }') : GM_addStyle(' #RL-Booking { display: none;  }');
   const myDiv = document.createElement('div');
   const els = document.querySelectorAll(sites[window.location.host].appendParent);
   const appendPlace = els[els.length-1];
@@ -77,9 +90,9 @@ function getHTML(entry) {
   <!--<p>${entry.Airbnb}:</p>-->
   <a id="RL-Evernote" class="RL-link" href="https://www.evernote.com/client/web?usernameImmutable=false&login=&login=Sign+in&login=true&#?query=${entry.Airbnb}">Evernote</a>
   <a id="RL-Airhost"  class="RL-link" href="https://cloud.airhost.co/en/houses/${entry.Airhost.house}/rooms/${entry.Airhost.room}/pricings">Airhost</a>
-  <!-- <a id="RL-Airbnb"   class="RL-link" href= "https://www.airbnb.com/rooms/${entry.Airbnb}">Airbnb</a>
+  <a id="RL-Airbnb"   class="RL-link" href= "https://www.airbnb.com/rooms/${entry.Airbnb}">Airbnb</a>
   <a id="RL-Booking"  class="RL-link" href="https://admin.booking.com/hotel/hoteladmin/extranet_ng/manage/availability_calendar.html?lang=ja&hotel_id=${entry.Booking.hotel_id}">Booking</a>
-  <a id="RL-Expedia"  class="RL-link" href= "">Expedia</a>
+  <!--<a id="RL-Expedia"  class="RL-link" href= "">Expedia</a>
   <a id="RL-Asiayo"   class="RL-link" href= "">AsiaYo</a> -->
   </div>
 `;
@@ -113,7 +126,7 @@ if (!settings) {
 
 
 function sendRequestForPage() {
-  query = sites[window.location.host].getQuery();
+  const query = sites[window.location.host].getQuery();
   console.log("Query is: " + query)
   query ?　handleRequest(query) : console.log("No room-id found...");
 }
@@ -121,7 +134,7 @@ function sendRequestForPage() {
 function checkDom(){
   var els = document.querySelectorAll(sites[window.location.host].domElement)
   el = els[els.length-1]
-  if (el&&el.textContent === oldel) { return; }
+  if (el&& el.textContent === oldel) { return; }
   console.log("check_element updated")
   el ? sendRequestForPage() : setTimeout(checkDom, 2000);
 }
@@ -149,19 +162,18 @@ const sites = {
     'start':  () => {
       GM_addStyle(' #RL-Airhost { display: none;  }')
       setTimeout(checkDom, 1000);
-      return true;
     }
   },
   'mail.google.com': {
     'domElement': 'table[class^=\'m_\']',
     'getQuery': () => {
-      //add steps to try fetching from name
+      //add steps to try fetching from name;
+      // add <a class="m_3988773367824515790body-text" href="https://admin.booking.com/hotel/hoteladmin/extranet_ng/manage/home.html?lang=ja&amp;hotel_id=4116088" style="color:#0896ff;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:17px;text-decoration:none" target="_blank" data-saferedirecturl="https://www.google.com/url?q=https://admin.booking.com/hotel/hoteladmin/extranet_ng/manage/home.html?lang%3Dja%26hotel_id%3D4116088&amp;source=gmail&amp;ust=1562301587450000&amp;usg=AFQjCNE71wCuNTuFznjeqQWYoaELxWjKYw">Union Shin-osaka</a>
       return "Airbnb_Room_ID=" + extractLsnoTextContent('table[class^=\'m_\']')
     },
     'appendParent': '.hP',
     'start': () => {
       setInterval(checkDom, 1500)
-      return true;
     }
   },
   'admin.booking.com': {
@@ -171,13 +183,38 @@ const sites = {
     },
     'appendParent': '.js-reservation-note',
     'start': () => {
-      console.log("Starting Booking!!")
       GM_addStyle(' #RL-Booking { display: none;  }')
       setTimeout(checkDom, 1500)
-      return true;
+    }
+  },
+  'www.evernote.com': {
+    'domElement': '#qa-NOTE_DETAIL',
+    'getQuery': () => {
+      checkForNote = () => {
+        const tags = document.querySelectorAll("div[id^=\'qa-TAG_NAME_\'");
+        const hit = Object.keys(tags).find((x) => {
+                  return (tags[x].getAttribute('id').match(/\d{7,8}/))
+                });
+        if (tags && hit) {
+          return `Airbnb_Room_ID=${tags[hit].getAttribute('id').match(/\d{7,8}/)}`;
+        } else if (!document.querySelector('#qa-NOTE_DETAIL').textContent) {
+          console.log('Note detail contents null... waiting...')
+          setTimeout(checkForNote, 2000);
+          return;
+        }
+        const lsno = extractLsnoTextContent('#qa-NOTE_DETAIL')
+        return `Airbnb_Room_ID=${lsno}`;
+      }
+      return checkForNote();
+    },
+    'appendParent': '#qa-NOTE_EDITOR',
+    'start': () => {
+      GM_addStyle(' #RL-Evernote { display: none;  }')
+      document.addEventListener('transitionend', checkDom);
     }
   }
 }
+
 
 let el,
     oldel,

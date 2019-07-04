@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Room Links
 // @namespace    https://www.faminect.jp/
-// @version      0.6
+// @version      0.6.1
 // @description  部屋の各サイト、繋がっていこう
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/RoomLinks.user.js
@@ -43,9 +43,10 @@ function handleRequest(query) {
             return;
         }
         json = JSON.parse(res.responseText)
+        oldquery = json.query
         json.Airbnb ? displayEntry(json) : badEntry(json.response);
-        }
-      });
+      }
+  });
 }
 
 function badEntry(msg) {
@@ -127,6 +128,7 @@ if (!settings) {
 
 function sendRequestForPage() {
   const query = sites[window.location.host].getQuery();
+  if (query === oldquery) { console.log("Query: "+ query +" matches old query "+oldquery); return; }
   console.log("Query is: " + query)
   query ?　handleRequest(query) : console.log("No room-id found...");
 }
@@ -148,7 +150,7 @@ const sites = {
     },
     'appendParent': '.task-column__body-toolbar',
     'start': () => {
-      document.addEventListener('transitionend', checkDom);
+      document.addEventListener('transitionstart', checkDom);
       return true;
     }
   },
@@ -219,5 +221,6 @@ const sites = {
 let el,
     oldel,
     olden;
+let oldquery = "";
 
 sites[window.location.host].start();

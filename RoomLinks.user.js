@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Room Links
 // @namespace    https://www.faminect.jp/
-// @version      0.4.2
+// @version      0.5
 // @description  部屋の各サイト、繋がっていこう
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/RoomLinks.user.js
@@ -9,12 +9,14 @@
 // @include      https://app.clickup.com*
 // @include      https://cloud.airhost.co*
 // @include      https://mail.google.com*
+// @include      https://admin.booking.com*
 // @resource     settings file:///C:/Program Files/QMTM/settings.json
 // @resource     mac_settings file:///Users/Shared/settings.json
 // @connect      google.com
 // @connect      googleusercontent.com
 // @grant        GM_xmlhttpRequest
 // @grant        GM_getResourceText
+// @grant        GM_addStyle
 // @run-at       document-idle
 // ==/UserScript==
 
@@ -109,20 +111,9 @@ if (!settings) {
   console.log("settings.json load success")
 }
 
-function extractLsnoFallback(site){
-  switch (site) {
-    case 'cloud.airhost.co': {
-      const path = window.location.pathname.match(/\d{5}/g);
-      return `Airhost_Room_ID=${path[1]}`
-      break;
-    }
-  }
-}
 
 function sendRequestForPage() {
-  const site = window.location.host
-  const pageTextContent = extractLsnoTextContent(sites[site].lsnoContainer);
-  const query = pageTextContent ? "Airbnb_Room_ID=" + pageTextContent : extractLsnoFallback(site);
+  query = sites[window.location.host].getQuery();
   console.log("Query is: " + query)
   query ?　handleRequest(query) : console.log("No room-id found...");
 }
@@ -138,28 +129,51 @@ function checkDom(){
 const sites = {
   'app.clickup.com': {
     'domElement': 'div.task-name',
-    'lsnoContainer': 'div.task-name',
+    'getQuery': () => {
+      //add thingy back to get from sheet
+      return "Airbnb_Room_ID=" + extractLsnoTextContent('div.task-name')
+    },
     'appendParent': '.task-column__body-toolbar',
-    'event': () => {
+    'start': () => {
       document.addEventListener('transitionend', checkDom);
       return true;
     }
   },
   'cloud.airhost.co': {
     'domElement': '.navigation-header',
-    'lsnoContainer': '[selected=selected]',
+    'getQuery': () => {
+      const path = window.location.pathname.match(/\d{5}/g);
+      return path ? `Airhost_Room_ID=${path[1]}` : "Airbnb_Room_ID=" + extractLsnoTextContent('[selected=selected]')
+    },
     'appendParent': '.navigation-header',
-    'event':  () => {
+    'start':  () => {
+      GM_addStyle(' #RL-Airhost { display: none;  }')
       setTimeout(checkDom, 1000);
       return true;
     }
   },
   'mail.google.com': {
     'domElement': 'table[class^=\'m_\']',
-    'lsnoContainer': 'table[class^=\'m_\']',
+    'getQuery': () => {
+      //add steps to try fetching from name
+      return "Airbnb_Room_ID=" + extractLsnoTextContent('table[class^=\'m_\']')
+    },
     'appendParent': '.hP',
-    'event': () => {
+    'start': () => {
       setInterval(checkDom, 1500)
+      return true;
+    }
+  },
+  'admin.booking.com': {
+    'domElement': '.js-room-row',
+    'getQuery': () => {
+      return `Booking_Room_ID=${document.querySelector('.js-room-row').getAttribute('data-room-id')}`
+    },
+    'appendParent': '.js-reservation-note',
+    'start': () => {
+      console.log("Starting Booking!!")
+      GM_addStyle(' #RL-Booking { display: none;  }')
+      setTimeout(checkDom, 1500)
       return true;
     }
   }
@@ -169,4 +183,4 @@ let el,
     oldel,
     olden;
 
-sites[window.location.host].event();
+sites[window.location.host].start();

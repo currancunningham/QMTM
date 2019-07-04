@@ -128,7 +128,13 @@ if (!settings) {
 
 function sendRequestForPage() {
   const query = sites[window.location.host].getQuery();
-  if (query === oldquery) { console.log("Query: "+ query +" matches old query "+oldquery); return; }
+  if (query === oldquery) {
+    console.log("Query: "+ query +" matches old query "+oldquery);
+    return;
+  } else if (query == undefined) {
+    console.log("Query is: " + query + "(closing)")
+    return;
+  }
   console.log("Query is: " + query)
   query ?　handleRequest(query) : console.log("No room-id found...");
 }
@@ -146,7 +152,14 @@ const sites = {
     'domElement': 'div.task-name',
     'getQuery': () => {
       //add thingy back to get from sheet
-      return "Airbnb_Room_ID=" + extractLsnoTextContent('div.task-name')
+      const cusheet = document.querySelector('#sheetlsno')
+      if (cusheet) {
+        if (cusheet.value === "リスティング番号不明") { return undefined; }
+        return "Airbnb_Room_ID=" + cusheet.value;
+      }
+      const title = extractLsnoTextContent('div.task-name')
+      if (title) { return "Airbnb_Room_ID=" + title; }
+      return undefined
     },
     'appendParent': '.task-column__body-toolbar',
     'start': () => {

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Room Links
 // @namespace    https://www.faminect.jp/
-// @version      0.4
+// @version      0.4.1
 // @description  部屋の各サイト、繋がっていこう
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/RoomLinks.user.js
@@ -33,17 +33,14 @@ function handleRequest(query) {
       method: "GET",
       onload: (res) => {
         oldel = el;
-        console.log(res);
-        console.log(res.responseText)
         let json = {};
         if (res.responseText[0] === "<") {
             const w = window.open("about:blank", "_blank", "");
             w.document.write(res.responseText);
             return;
         }
-
         json = JSON.parse(res.responseText)
-        displayEntry(json);
+        json.Airbnb ? displayEntry(json) : console.log('Bad response from server: ' + json.response);
         }
       });
 }
@@ -88,7 +85,7 @@ function extractLsnoTextContent(css_query) {
   const lsnoRegex = /[^\d](\d{7,8})[^\d]|^(\d{7,8})[^\d]|[^\d](\d{7,8})$/;
   const text_el = document.querySelector(css_query);
   const tmp = text_el ? text_el.textContent.match(lsnoRegex) : console.log("CSS Query not found...");
-  if (text_el) {
+  if (text_el && tmp) {
     const lsno = tmp[1]|tmp[2]|tmp[3];
     return lsno;
   }
@@ -108,12 +105,22 @@ if (!settings) {
   console.log("settings.json load success")
 }
 
-
+function extractLsnoFallback(site){
+  switch (site) {
+    case 'cloud.airhost.co': {
+      const path = window.location.pathname.match(/\d{5}/g);
+      return `Airhost_Room_ID=${path[1]}`
+      break;
+    }
+  }
+}
 
 function sendRequestForPage() {
-  const selector = getSiteInfo(window.location.host, 'lsno-container');
-  const query = "Airbnb=" + extractLsnoTextContent(selector);
-  console.log("Query is: "+query)
+  const site = window.location.host
+  const selector = getSiteInfo(site, 'lsno-container');
+  const pageTextContent = extractLsnoTextContent(selector);
+  const query = pageTextContent ? "Airbnb_Room_ID=" + pageTextContent : extractLsnoFallback(site);
+  console.log("Query is: " + query)
   query ?　handleRequest(query) : console.log("No room-id found...");
 }
 

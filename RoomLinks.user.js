@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Room Links
 // @namespace    https://www.faminect.jp/
-// @version      0.4.1
+// @version      0.4.2
 // @description  部屋の各サイト、繋がっていこう
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/RoomLinks.user.js
@@ -32,7 +32,7 @@ function handleRequest(query) {
       url: JSON.parse(settings).api.dev.roomlinks + "?" + query,
       method: "GET",
       onload: (res) => {
-        oldel = el;
+        oldel = el.textContent;
         let json = {};
         if (res.responseText[0] === "<") {
             const w = window.open("about:blank", "_blank", "");
@@ -46,12 +46,14 @@ function handleRequest(query) {
 }
 
 function displayEntry(entry) {
+  if (entry.Airbnb === olden) { return; }
   while (true) {
     let e = document.querySelector("#roomLinksDiv");
     if (e) { e.remove(); } else { break; }
   }
+  olden = entry.Airbnb;
   const myDiv = document.createElement('div');
-  const appendPlace = getSiteInfo(window.location.host, 'append-parent');
+  const appendPlace = sites[window.location.host].appendParent;
   myDiv.innerHTML = getHTML(entry);
   document.querySelector(appendPlace).appendChild(myDiv);
 }
@@ -116,48 +118,51 @@ function extractLsnoFallback(site){
 }
 
 function sendRequestForPage() {
-  const site = window.location.host
-  const selector = getSiteInfo(site, 'lsno-container');
-  const pageTextContent = extractLsnoTextContent(selector);
+  const pageTextContent = extractLsnoTextContent(sites[window.location.host].lsnoContainer);
   const query = pageTextContent ? "Airbnb_Room_ID=" + pageTextContent : extractLsnoFallback(site);
   console.log("Query is: " + query)
   query ?　handleRequest(query) : console.log("No room-id found...");
 }
 
-function getSiteInfo(site, info) {
-  const sites = {
-    'app.clickup.com': {
-      'dom-element': '.task-name',
-      'lsno-container': '.task-name',
-      'append-parent': '.task-column__body-toolbar'
-    },
-    'cloud.airhost.co': {
-      'dom-element': '.navigation-header',
-      'lsno-container': '[selected=selected]',
-      'append-parent': '.navigation-header'
-    },
-    'mail.google.com': {
-      'dom-element': 'table[class^=\'m_\']',
-      'lsno-container': 'table[class^=\'m_\']',
-      'append-parent': '.hP'
-    }
-  }
-  return sites[site][info] ? sites[site][info] : null;
-}
-
 function checkDom(){
-  const check_element = getSiteInfo(window.location.host, 'dom-element');
-  el = document.querySelector(check_element)
-  if (el === oldel) { return; }
+  el = document.querySelector(sites[window.location.host].domElement)
+  if (el&&el.textContent === oldel) { console.log("old el..."); return; }
   console.log("check_element updated")
-  while (true) {
-    let e = document.querySelector("#roomLinksDiv");
-    if (e) { e.remove(); } else { break; }
-  }
   el ? sendRequestForPage() : setTimeout(checkDom, 2000);
 }
 
-let oldel,
-    el;
-document.addEventListener("transitionstart", checkDom);
-setTimeout(checkDom, 3000);
+const sites = {
+  'app.clickup.com': {
+    'domElement': '.task-name',
+    'lsnoContainer': '.task-name',
+    'appendParent': '.task-column__body-toolbar',
+    'event': () => {
+      document.addEventListener('transitionstart', checkDom);
+      return true;
+    }
+  },
+  'cloud.airhost.co': {
+    'domElement': '.navigation-header',
+    'lsnoContainer': '[selected=selected]',
+    'appendParent': '.navigation-header',
+    'event':  () => {
+      setTimeout(checkDom, 1000);
+      return true;
+    }
+  },
+  'mail.google.com': {
+    'domElement': 'table[class^=\'m_\']',
+    'lsnoContainer': 'table[class^=\'m_\']',
+    'appendParent': '.hP',
+    'event': () => {
+      setInterval(checkDom, 1500)
+      return true;
+    }
+  }
+}
+
+let el,
+    oldel,
+    olden;
+
+sites[window.location.host].event();

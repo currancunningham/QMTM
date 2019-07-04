@@ -53,9 +53,10 @@ function displayEntry(entry) {
   }
   olden = entry.Airbnb;
   const myDiv = document.createElement('div');
-  const appendPlace = sites[window.location.host].appendParent;
+  const els = document.querySelectorAll(sites[window.location.host].appendParent);
+  const appendPlace = els[els.length-1];
   myDiv.innerHTML = getHTML(entry);
-  document.querySelector(appendPlace).appendChild(myDiv);
+  appendPlace ? appendPlace.appendChild(myDiv) : console.log("Didn't find parent to append to");
 }
 
 function getHTML(entry) {
@@ -85,7 +86,8 @@ function getHTML(entry) {
 
 function extractLsnoTextContent(css_query) {
   const lsnoRegex = /[^\d](\d{7,8})[^\d]|^(\d{7,8})[^\d]|[^\d](\d{7,8})$/;
-  const text_el = document.querySelector(css_query);
+  const els = document.querySelectorAll(css_query);
+  const text_el = els[els.length - 1];
   const tmp = text_el ? text_el.textContent.match(lsnoRegex) : console.log("CSS Query not found...");
   if (text_el && tmp) {
     const lsno = tmp[1]|tmp[2]|tmp[3];
@@ -118,26 +120,28 @@ function extractLsnoFallback(site){
 }
 
 function sendRequestForPage() {
-  const pageTextContent = extractLsnoTextContent(sites[window.location.host].lsnoContainer);
+  const site = window.location.host
+  const pageTextContent = extractLsnoTextContent(sites[site].lsnoContainer);
   const query = pageTextContent ? "Airbnb_Room_ID=" + pageTextContent : extractLsnoFallback(site);
   console.log("Query is: " + query)
   query ?　handleRequest(query) : console.log("No room-id found...");
 }
 
 function checkDom(){
-  el = document.querySelector(sites[window.location.host].domElement)
-  if (el&&el.textContent === oldel) { console.log("old el..."); return; }
+  var els = document.querySelectorAll(sites[window.location.host].domElement)
+  el = els[els.length-1]
+  if (el&&el.textContent === oldel) { return; }
   console.log("check_element updated")
   el ? sendRequestForPage() : setTimeout(checkDom, 2000);
 }
 
 const sites = {
   'app.clickup.com': {
-    'domElement': '.task-name',
-    'lsnoContainer': '.task-name',
+    'domElement': 'div.task-name',
+    'lsnoContainer': 'div.task-name',
     'appendParent': '.task-column__body-toolbar',
     'event': () => {
-      document.addEventListener('transitionstart', checkDom);
+      document.addEventListener('transitionend', checkDom);
       return true;
     }
   },

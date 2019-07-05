@@ -35,7 +35,7 @@ function sendToBackend(r) {
       method: "POST",
       data: JSON.stringify(this_r),
       onload: (res) => {
-        //console.log(res.responseText);
+        console.log(res.responseText);
       }
     });
   });
@@ -76,22 +76,22 @@ function checkAndSend() {
       privateReviewClass.childNodes.forEach(category => {
        switch (category.firstChild.textContent) {
           case "立地":
-            locationScore = category.childNodes[1].firstChild.getAttribute('aria-label').match(/評価：(.*?)／5/);
+            locationScore = category.childNodes[1].firstChild.getAttribute('aria-label').match(/評価：(.*?)／5/)[1];
             break;
           case "正確さ":
-            correctness = category.childNodes[1].firstChild.getAttribute('aria-label').match(/評価：(.*?)／5/);
+            correctness = category.childNodes[1].firstChild.getAttribute('aria-label').match(/評価：(.*?)／5/)[1];
             break;
           case "チェックイン":
-            checkin = category.childNodes[1].firstChild.getAttribute('aria-label').match(/評価：(.*?)／5/);
+            checkin = category.childNodes[1].firstChild.getAttribute('aria-label').match(/評価：(.*?)／5/)[1];
             break;
           case "清潔さ":
-            cleanliness = category.childNodes[1].firstChild.getAttribute('aria-label').match(/評価：(.*?)／5/);
+            cleanliness = category.childNodes[1].firstChild.getAttribute('aria-label').match(/評価：(.*?)／5/)[1];
             break;
           case "コミュニケーション":
-            communication = category.childNodes[1].firstChild.getAttribute('aria-label').match(/評価：(.*?)／5/);
+            communication = category.childNodes[1].firstChild.getAttribute('aria-label').match(/評価：(.*?)／5/)[1];
             break;
           case "コスパ":
-            costperformance = category.childNodes[1].firstChild.getAttribute('aria-label').match(/評価：(.*?)／5/);
+            costperformance = category.childNodes[1].firstChild.getAttribute('aria-label').match(/評価：(.*?)／5/)[1];
             break;
           default:
             break;

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Airbnb評価取得
 // @namespace    https://www.faminect.jp/
-// @version      1.3
+// @version      1.3.1
 // @description  Airbnbレビューページから取得し、シートまで送る
 // @downloadURL  https://github.com/Altigraph/QMTM/raw/master/Airbnb%E8%A9%95%E4%BE%A1%E5%8F%96%E5%BE%97.user.js
 // @uploadURL    https://github.com/Altigraph/QMTM/raw/master/Airbnb%E8%A9%95%E4%BE%A1%E5%8F%96%E5%BE%97.user.js
@@ -58,13 +58,13 @@ function checkAndSend() {
       let totalScore = this_review.querySelector('._atbpe5').innerHTML.match(/aria-label="評価：([\d])／5/)[1];
       let guestName = this_review.querySelector('._1p3joamp').textContent;
       let CICO = this_review.querySelector('._1jlnvra2').textContent.match(/[\d]月[\d]*?日/g);
-      CICO[0] = "2019/" + CICO[0].replace(/日/, '').replace(/月/, '/');
-      CICO[1] = "2019/" + CICO[1].replace(/日/, '').replace(/月/, '/');
+      let CI = "2019/" + CICO[0].replace(/日/, '').replace(/月/, '/');
+      let CO = "2019/" + CICO[1].replace(/日/, '').replace(/月/, '/');
       let roomTitle = this_review.querySelectorAll('._1jlnvra2')[1].textContent;
-      let publicReview = this_review.querySelector('._k94v97k').textContent.match(/公開フィードバック\s(.*?)\s公開で返信/)[1];
+      let publicReview = this_review.querySelector('._k94v97k').textContent.match(/公開フィードバック(.*?)公開で返信/)[1];
 
       let privateReviewClass = this_review.querySelector('._1rlifxji');
-      let privateReviews = privateReviewClass[0].querySelectorAll('._czm8crp');
+      let privateReviews = privateReviewClass.querySelectorAll('._czm8crp');
       let privateReview;
       privateReviews.forEach(rev => {
         if(!!rev.textContent) {
@@ -72,28 +72,28 @@ function checkAndSend() {
         }
       });
 
-      let categories = privateReviewClass.innerHTML.match(/<div(.*?)／5/g);
       let locationScore, correctness, checkin, cleanliness, communication, costperformance;
-      categories.forEach(category => {
-        let score = category.match(/<div class="_1p3joamp">(.*?)<\/div>(.*?)aria-label="評価：([\d])／5/);
-        switch (score[1]) {
-        case "立地":
-            locationScore = score[3];
+      privateReviewClass.childNodes.forEach(category => {
+       switch (category.firstChild.textContent) {
+          case "立地":
+            locationScore = category.childNodes[1].firstChild.getAttribute('aria-label').match(/評価：(.*?)／5/);
             break;
-        case "正確さ":
-            correctness = score[3];
+          case "正確さ":
+            correctness = category.childNodes[1].firstChild.getAttribute('aria-label').match(/評価：(.*?)／5/);
             break;
-        case "チェックイン":
-            checkin = score[3];
+          case "チェックイン":
+            checkin = category.childNodes[1].firstChild.getAttribute('aria-label').match(/評価：(.*?)／5/);
             break;
-        case "清潔さ":
-            cleanliness = score[3];
+          case "清潔さ":
+            cleanliness = category.childNodes[1].firstChild.getAttribute('aria-label').match(/評価：(.*?)／5/);
             break;
-        case "コミュニケーション":
-            communication = score[3];
+          case "コミュニケーション":
+            communication = category.childNodes[1].firstChild.getAttribute('aria-label').match(/評価：(.*?)／5/);
             break;
-        case "コスパ":
-            costperformance = score[3];
+          case "コスパ":
+            costperformance = category.childNodes[1].firstChild.getAttribute('aria-label').match(/評価：(.*?)／5/);
+            break;
+          default:
             break;
         }
       });
@@ -101,7 +101,7 @@ function checkAndSend() {
       let painPointsClass = this_review.querySelectorAll('._114g51qn');
       let painPoints;
       painPointsClass.forEach(painPoint => {
-        if (!!painPointsClass[k].textContent) {
+        if (!!painPointsClass.textContent) {
             painPoints += painPointsClass[k].textContent + " ";
         }
       });
@@ -111,7 +111,7 @@ function checkAndSend() {
       let thisHost = this_id ? json.sheets.airbnb.hostName.replace(/Not Found or Invalid Entry/, this_id[1]) : hostName;
 
       let this_output = [thisListing, json.sheets.airbnb.propName, thisHost, json.sheets.airbnb.reservationCode, guestName,
-        json.sheets.airbnb.cleaningCompany, CICO[0], CICO[1], totalScore, publicReview, privateReview || "", "", painPoints || "",
+        json.sheets.airbnb.cleaningCompany, CI, CO, totalScore, publicReview, privateReview || "", "", painPoints || "",
         "", communication, cleanliness, locationScore, checkin, correctness, costperformance, today_ymd];
       output.push(this_output);
   });

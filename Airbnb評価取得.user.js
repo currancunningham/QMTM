@@ -67,7 +67,7 @@ function checkAndSend() {
       let privateReviews = privateReviewClass.querySelectorAll('._czm8crp');
       let privateReview;
       privateReviews.forEach(rev => {
-        if(!!rev.textContent && rev.textContent !== undefined) {
+        if(!!rev.textContent && rev.textContent !== undefined && rev.textContent !== "改善点") {
             privateReview += "\n" + rev.textContent;
         }
       });

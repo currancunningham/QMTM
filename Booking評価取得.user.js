@@ -154,8 +154,13 @@ function checkDom() {
   console.log("Booking評価取得クライエント online");
 
   const newReviews = createEntries();
-  newReviews.length ? sendToBackend(newReviews) : console.log("No new reviews found.")
+  newReviews.length ? sendToBackend(newReviews) : closeTM();
+}
+
+function closeTM() {
+  console.log("No new reviews found.")
   if (window.opener && window.opener.tampermonkey === true) { setTimeout(window.close, 7500); }
+
 }
 
 // Checking for settings file we need to connect to server

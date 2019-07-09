@@ -16,13 +16,14 @@ if (window.opener && window.opener.tampermonkey && window.opener.tampermonkey.de
     const h_id = window.opener.tampermonkey.destination_id
     console.log("Continuing to destination: " + h_id);
     const thisUrl = new URL(document.URL);
-    window.tampermonkey.destination = h_id;
+    window.tampermonkey = {};
+    window.tampermonkey.destination_id = h_id;
     window.open('https://admin.booking.com/hotel/hoteladmin/extranet_ng/manage/reviews.html?hotel_id='+h_id+'&ses='+thisUrl.searchParams.get('ses'), "_self",
                 'height=80,width=100,left=10000,top=10000,scrollbars=no,status=no');
     return thisUrl;
 }
 
-window.tampermonkey = true;
+window.tampermonkey = {};
 let script = document.createElement('script');
 script.type = "text/javascript";
 script.innerHTML=`

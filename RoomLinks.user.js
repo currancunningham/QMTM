@@ -142,7 +142,7 @@ function sendRequestForPage() {
 function checkDom(){
   var els = document.querySelectorAll(sites[window.location.host].domElement)
   el = els[els.length-1]
-  if (el&& el.textContent === oldel) { return; }
+  if (el && el.textContent === oldel || el === undefined) { return; }
   console.log("check_element updated")
   el ? sendRequestForPage() : setTimeout(checkDom, 2000);
 }

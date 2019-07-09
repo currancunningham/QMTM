@@ -4,8 +4,8 @@
 // @version      0.1
 // @description  ANYサイトから、Airbnbまで繋がっていこう
 // @author       草村安隆 Andrew Lucian Thoreson
-// @downloadURL
-// @updateURL
+// @downloadURL  https://github.com/Altigraph/QMTM/raw/master/Evernote%E6%A4%9C%E7%B4%A2.user.js
+// @updateURL    https://github.com/Altigraph/QMTM/raw/master/Evernote%E6%A4%9C%E7%B4%A2.user.js
 // @resource     settings file:///C:/Program Files/QMTM/settings.json
 // @resource     mac_settings file:///Users/Shared/settings.json
 // @run-at       context-menu

@@ -12,7 +12,7 @@
 (function(){
   const selected = window.getSelection().toString();
   if (selected.match(/^\d{7,8}$/)) {
-    window.open('https://www.airbnb.com/rooms/'+selected, "_blank"
+    window.open('https://www.airbnb.com/rooms/'+selected, "_blank")
   } else {
     window.alert("リスティング番号だけ検索可");
   }

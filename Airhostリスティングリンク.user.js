@@ -12,7 +12,7 @@
 (function(){
   const selected = window.getSelection().toString();
   if (selected.match(/^\d{7,8}$/)) {
-    window.open('https://script.google.com/a/familiar-link.com/macros/s/AKfycbzHSsDI8a1H0XGTLBNx6JAPu0DRUj8xkjp5Y9yj8hz_pUIoEa0/exec?airhost='+selected, "_blank"
+    window.open('https://script.google.com/a/familiar-link.com/macros/s/AKfycbzHSsDI8a1H0XGTLBNx6JAPu0DRUj8xkjp5Y9yj8hz_pUIoEa0/exec?airhost='+selected, "_blank")
   } else {
     window.alert("リスティング番号だけ検索可");
   }

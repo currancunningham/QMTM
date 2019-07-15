@@ -4,8 +4,8 @@
 // @version      0.6.1
 // @description  部屋の各サイト、繋がっていこう
 // @author       草村安隆 Andrew Lucian Thoreson
-// @downloadURL  https://github.com/Altigraph/QMTM/raw/master/RoomLinks.user.js
-// @updateURL    https://github.com/Altigraph/QMTM/raw/master/RoomLinks.user.js
+// @downloadURL  https://github.com/sinaraheneba/QMTM/raw/master/RoomLinks.user.js
+// @updateURL    https://github.com/sinaraheneba/QMTM/raw/master/RoomLinks.user.js
 // @include      https://app.clickup.com*
 // @include      https://cloud.airhost.co*
 // @include      https://mail.google.com*
@@ -156,9 +156,10 @@ const sites = {
       if (cusheet) {
         if (cusheet.value === "リスティング番号不明") { return undefined; }
         return "Airbnb_Room_ID=" + cusheet.value;
+      } else {
+        const title = extractLsnoTextContent('div.task-name')
+        if (title) { return "Airbnb_Room_ID=" + title; }
       }
-      const title = extractLsnoTextContent('div.task-name')
-      if (title) { return "Airbnb_Room_ID=" + title; }
       return undefined
     },
     'appendParent': '.task-column__body-toolbar',

@@ -4,8 +4,8 @@
 // @version      0.1
 // @description  ANYサイトから、Airbnbまで繋がっていこう
 // @author       草村安隆 Andrew Lucian Thoreson
-// @downloadURL  https://github.com/Altigraph/QMTM/raw/master/Booking%E3%83%AA%E3%82%B9%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%AA%E3%83%B3%E3%82%AF.user.js
-// @updateURL    https://github.com/Altigraph/QMTM/raw/master/Booking%E3%83%AA%E3%82%B9%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%AA%E3%83%B3%E3%82%AF.user.js
+// @downloadURL  https://github.com/sinaraheneba/QMTM/raw/master/Booking%E3%83%AA%E3%82%B9%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%AA%E3%83%B3%E3%82%AF.user.js
+// @updateURL    https://github.com/sinaraheneba/QMTM/raw/master/Booking%E3%83%AA%E3%82%B9%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%AA%E3%83%B3%E3%82%AF.user.js
 // @run-at       context-menu
 // ==/UserScript==
 

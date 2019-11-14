@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Airbnb評価取得
 // @namespace    https://www.faminect.jp/
-// @version      1.3.2
+// @version      1.3.3
 // @description  Airbnbレビューページから取得し、シートまで送る
 // @downloadURL  https://github.com/currancunningham/QMTM/raw/master/Airbnb%E8%A9%95%E4%BE%A1%E5%8F%96%E5%BE%97.user.js
 // @uploadURL    https://github.com/currancunningham/QMTM/raw/master/Airbnb%E8%A9%95%E4%BE%A1%E5%8F%96%E5%BE%97.user.js

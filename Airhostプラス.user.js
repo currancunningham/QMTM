@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Airhostプラス
 // @namespace    https://www.faminect.jp/
-// @version      0.3
+// @version      0.3.1
 // @description  Airbnb画面をプラスα
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/currancunningham/QMTM/raw/master/Airhost%E3%83%97%E3%83%A9%E3%82%B9.user.js

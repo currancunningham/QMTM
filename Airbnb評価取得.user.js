@@ -3,8 +3,8 @@
 // @namespace    https://www.faminect.jp/
 // @version      1.3.2
 // @description  Airbnbレビューページから取得し、シートまで送る
-// @downloadURL  https://github.com/sinaraheneba/QMTM/raw/master/Airbnb%E8%A9%95%E4%BE%A1%E5%8F%96%E5%BE%97.user.js
-// @uploadURL    https://github.com/sinaraheneba/QMTM/raw/master/Airbnb%E8%A9%95%E4%BE%A1%E5%8F%96%E5%BE%97.user.js
+// @downloadURL  https://github.com/currancunningham/QMTM/raw/master/Airbnb%E8%A9%95%E4%BE%A1%E5%8F%96%E5%BE%97.user.js
+// @uploadURL    https://github.com/currancunningham/QMTM/raw/master/Airbnb%E8%A9%95%E4%BE%A1%E5%8F%96%E5%BE%97.user.js
 // @author       草村安隆 Andrew Lucian Thoreson
 // @include      https://www.airbnb.jp/progress/ratings*
 // @resource     settings file:///C:/Program Files/QMTM/settings.json

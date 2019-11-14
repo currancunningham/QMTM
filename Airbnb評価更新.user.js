@@ -4,8 +4,8 @@
 // @version      1.3
 // @description  Airbnbのページを開けたら、背景でレビュー取得
 // @author       草村安隆 Andrew Lucian Thoreson
-// @downloadURL  https://github.com/sinaraheneba/QMTM/raw/master/Airbnb%E8%A9%95%E4%BE%A1%E6%9B%B4%E6%96%B0.user.js
-// @updateURL    https://github.com/sinaraheneba/QMTM/raw/master/Airbnb%E8%A9%95%E4%BE%A1%E6%9B%B4%E6%96%B0.user.js
+// @downloadURL  https://github.com/currancunningham/QMTM/raw/master/Airbnb%E8%A9%95%E4%BE%A1%E6%9B%B4%E6%96%B0.user.js
+// @updateURL    https://github.com/currancunningham/QMTM/raw/master/Airbnb%E8%A9%95%E4%BE%A1%E6%9B%B4%E6%96%B0.user.js
 // @include      https://www.airbnb.jp/*
 // @exclude      https://www.airbnb.jp/progress/ratings*
 // @grant        none

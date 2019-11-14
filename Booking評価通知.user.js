@@ -4,8 +4,8 @@
 // @version      1.3
 // @description  Bookingレビューページから、新レビュー通知発行・各ホテル詳細レビュー記録取得
 // @author       草村安隆 Andrew Lucian Thoreson
-// @downloadURL  https://github.com/sinaraheneba/QMTM/raw/master/Booking%E8%A9%95%E4%BE%A1%E9%80%9A%E7%9F%A5.user.js
-// @updateURL    https://github.com/sinaraheneba/QMTM/raw/master/Booking%E8%A9%95%E4%BE%A1%E9%80%9A%E7%9F%A5.user.js
+// @downloadURL  https://github.com/currancunningham/QMTM/raw/master/Booking%E8%A9%95%E4%BE%A1%E9%80%9A%E7%9F%A5.user.js
+// @updateURL    https://github.com/currancunningham/QMTM/raw/master/Booking%E8%A9%95%E4%BE%A1%E9%80%9A%E7%9F%A5.user.js
 // @include      https://admin.booking.com/hotel/hoteladmin/groups/reviews/index.html*
 // @resource     settings file:///C:/Program Files/QMTM/settings.json
 // @resource     mac_settings file:///Users/Shared/settings.json

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Room Links
 // @namespace    https://www.faminect.jp/
-// @version      0.6.1
+// @version      0.6.2
 // @description  部屋の各サイト、繋がっていこう
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/currancunningham/QMTM/raw/master/RoomLinks.user.js

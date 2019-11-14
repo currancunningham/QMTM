@@ -4,8 +4,8 @@
 // @version      0.1
 // @description  Booking画面をプラスα
 // @author       草村安隆 Andrew Lucian Thoreson
-// @downloadURL  https://github.com/sinaraheneba/QMTM/raw/master/Booking%E3%83%97%E3%83%A9%E3%82%B9.user.js
-// @updateURL    https://github.com/sinaraheneba/QMTM/raw/master/Booking%E3%83%97%E3%83%A9%E3%82%B9.user.js
+// @downloadURL  https://github.com/currancunningham/QMTM/raw/master/Booking%E3%83%97%E3%83%A9%E3%82%B9.user.js
+// @updateURL    https://github.com/currancunningham/QMTM/raw/master/Booking%E3%83%97%E3%83%A9%E3%82%B9.user.js
 // @include      https://admin.booking.com/*
 // @resource     settings file:///C:/Program Files/QMTM/settings.json
 // @resource     mac_settings file:///Users/Shared/settings.json

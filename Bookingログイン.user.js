@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bookingログイン
 // @namespace    https://www.faminect.jp/
-// @version      1.3
+// @version      1.3.1
 // @description  Booking Loginをタッチレスに
 // @author       草村安隆 Andrew Lucian Thoreson
 // @downloadURL  https://github.com/currancunningham/QMTM/raw/master/Booking%E3%83%AD%E3%82%B0%E3%82%A4%E3%83%B3.user.js
